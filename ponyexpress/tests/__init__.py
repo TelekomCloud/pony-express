@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from ConsumerRestApi import *
+from .ConsumerRestApi import *
