@@ -9,7 +9,7 @@ Manage your package landscape.
 
 To run tests:
 
-    python2 test.py
+    python setup.py test
 
 # License
 
