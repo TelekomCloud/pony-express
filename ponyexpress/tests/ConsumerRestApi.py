@@ -2,13 +2,13 @@ import json
 
 from .TestServer import *
 
-class BasicTestCase(TestServerBase):
+class BasicTestCaseV1(TestServerBase):
 
     def content_type_must_eq(self, response, t):
         self.assertEqual(response.headers['Content-Type'], t)
 
     def testRequestNodes(self):
-        r = self.app.get('/nodes')
+        r = self.app.get('/v1/nodes')
         self.content_type_must_eq(r,'application/json')
         self.assertEqual(rv.status_code,200)
 
