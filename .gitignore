@@ -1,0 +1,28 @@
+.DS_Store
+
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+develop-eggs
+.installed.cfg
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+#Developer
+.project
+.pydevproject
+.idea
