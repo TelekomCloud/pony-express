@@ -1,5 +1,7 @@
 # The Pony Express
 
+[![Build Status](https://travis-ci.org/TelekomCloud/pony-express.png)](https://travis-ci.org/TelekomCloud/pony-express.png)
+
 Manage your package landscape.
 
 **Under construction...**

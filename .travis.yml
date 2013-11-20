@@ -1,0 +1,8 @@
+language: python
+python:
+  - "2.7"
+  - "3.3"
+before_install:
+  - "pip install flake8 nose pep8"
+# command to run tests
+script: python setup.py test
