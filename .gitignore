@@ -5,6 +5,9 @@
 # C extensions
 *.so
 
+# Databases
+*.db
+
 # Packages
 *.egg
 *.egg-info
