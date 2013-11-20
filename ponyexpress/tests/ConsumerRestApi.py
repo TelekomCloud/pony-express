@@ -1,4 +1,6 @@
 import json
+import nose
+from nose.tools import *
 
 from .TestServer import *
 
