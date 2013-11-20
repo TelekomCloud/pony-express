@@ -5,6 +5,12 @@ Manage your package landscape.
 **Under construction...**
 
 
+# Tests
+
+To run tests:
+
+    python2 test.py
+
 # License
 
 Company: Deutsche Telekom AG
