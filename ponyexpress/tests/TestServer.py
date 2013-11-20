@@ -7,7 +7,7 @@ import ponyexpress
 # TODO, we will stub this for now
 #=================================
 
-class TestServer:
+class TestServerBase(unittest.TestCase):
 
     def setUp(self):
         # TODO: configure database        
@@ -16,6 +16,3 @@ class TestServer:
     def tearDown(self):
         # TODO: cleanup
         pass
-
-    def app(self):
-        return self.app

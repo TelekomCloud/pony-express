@@ -1,6 +1,19 @@
+import json
+
 from .TestServer import *
 
-class BasicTestCase(unittest.TestCase, TestServer):
+class BasicTestCase(TestServerBase):
 
-    def testSuccess(self): 
-        self.failUnlessEqual(1,1)
+    def content_type_must_eq(self, response, t):
+        self.assertEqual(response.headers['Content-Type'], t)
+
+    def testRequestNodes(self):
+        r = self.app.get('/nodes')
+        self.content_type_must_eq(r,'application/json')
+        self.assertEqual(rv.status_code,200)
+
+        resp = json.loads(rv.data)
+        self.assertEqual(resp["email"],"User1@User1.com")
+        self.assertEqual(resp["first_name"],"User1First")
+        self.assertEqual(resp["last_name"],"User1Last")
+
