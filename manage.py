@@ -13,17 +13,9 @@ migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 
 @manager.command
-def create_db():
-    """Creates the necessary tables in the database
-    specified in the `DB_PATH` config variable."""
-
-    print "Initializing budget tables ..."
-    db.metadata.create_all(db.engine)
-
-# sample command
-@manager.command
-def hello():
-    print "hello"
+def createdb():
+    with app.app_context():
+        db.create_all(app=app)
 
 if __name__ == "__main__":
     manager.run()

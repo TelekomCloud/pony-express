@@ -19,9 +19,6 @@ app.config.from_object('ponyexpress.config.configuration.DevelopmentConfig')
 # Database
 db.init_app(app)
 
-#with app.app_context():
-#    db.create_all(app=app)
-
 # Register blueprints
 app.register_blueprint(collector)
 app.register_blueprint(query)
