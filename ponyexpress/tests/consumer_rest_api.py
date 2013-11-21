@@ -2,7 +2,7 @@ import json
 import nose
 from nose.tools import *
 
-from .TestServer import *
+from .test_server import *
 
 class BasicTestCaseV1(TestServerBase):
 
