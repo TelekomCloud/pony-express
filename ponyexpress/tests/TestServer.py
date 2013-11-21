@@ -16,3 +16,7 @@ class TestServerBase(unittest.TestCase):
     def tearDown(self):
         # TODO: cleanup
         pass
+
+    def addNode(self, node_dict):
+        # TODO: a method to add nodes for test purposes
+        pass
