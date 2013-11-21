@@ -64,3 +64,17 @@ class BasicTestCaseV1(TestServerBase):
         package = ps[0]
         eq_( type( package ), dict )
         eq_( package['id'], self.DATA['node2']['packages'][0]['sha256'] )
+
+    def testRequestPackageInfo(self):
+        self.addNode(self.DATA['node2'])
+        p = self.DATA['node2']['packages'][0]
+        j = self.get_json('/v1/package/'+p['sha256'])
+        eq_( type( j ), dict )
+        eq_( j["name"], p["name"] )
+        eq_( j["uri"], p["uri"] )
+        eq_( j["summary"], p["summary"] )
+        eq_( j["version"], p["version"] )
+        eq_( j["architecture"], p["architecture"] )
+        eq_( j["sha256"], p["sha256"] )
+        eq_( j["provider"], p["provider"] )
+        eq_( j["archive"], p["archive"] )
