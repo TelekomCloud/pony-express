@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, Response
 from ponyexpress.api.exceptions import *
 
 from ponyexpress.database import db
@@ -51,5 +51,8 @@ def dataimport():
                     pass
                 else:
                     pass
+
+        #TODO: return node object?
+        return Response(status=200)
     else:
         raise InvalidAPIUsage('Invalid request method', status_code=400)
