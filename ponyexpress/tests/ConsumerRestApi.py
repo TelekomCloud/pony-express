@@ -65,6 +65,14 @@ class BasicTestCaseV1(TestServerBase):
         eq_( type( package ), dict )
         eq_( package['id'], self.DATA['node2']['packages'][0]['sha256'] )
 
+    def testRequestPackages(self):
+        self.addNode(self.DATA['node2'])
+        p = self.DATA['node2']['packages'][0]
+        j = self.get_json('/v1/packages')
+        eq_( type( j ), list )
+        eq_( len(j), 1 )
+        eq_( j[0]["id"], p["sha256"] )
+
     def testRequestPackageInfo(self):
         self.addNode(self.DATA['node2'])
         p = self.DATA['node2']['packages'][0]
