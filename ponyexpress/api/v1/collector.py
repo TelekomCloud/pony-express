@@ -1,4 +1,4 @@
-from flask import Blueprint, abort
+from flask import Blueprint, request
 from ponyexpress.api.exceptions import *
 
 from ponyexpress.database import db
@@ -8,22 +8,48 @@ from ponyexpress.models.node import Node
 collector = Blueprint('collector', __name__)
 
 @collector.route('/v1/collector')
+def default():
+    raise InvalidAPIUsage('Invalid request method', status_code=400)
+
+@collector.route('/v1/collector', methods=['POST','PUT'])
 def dataimport():
-    #
+    """Import json formated package information from a node.
+    Store this information into a database for later querying
+    """
 
-    #recieve put/post data and parse the json data structure
-    #create or update the node and package information in the database
+    # Safeguard
+    if request.method == 'PUT' or request.method == 'POST':
 
-    node = Node('foo.bar.baz')
+        request_json = request.get_json()
 
-    db.session.add(node)
-    db.session.commit()
+        node = Node.query.filter_by(name=request_json.node).first()
 
-    #return json
+        if not node:
+            # Add node
+            node = Node(request_json.node)
+            db.session.add(node)
 
-    raise InvalidAPIUsage('This view is gone', status_code=410)
+            #add the packages
+            for package in request_json.packages:
+                if package.sha:
+                    new_package = Package(package.sha, package.name, package.version)
 
-    #try:
-    #    return ''
-    #except Exception, e:
-    #    raise InvalidUsage('This view is gone', status_code=410)
+                    # Set extended attributes as well
+                    new_package.uri = package.uri
+                    new_package.architecture = package.architecture
+                    new_package.provider = package.provider
+                    new_package.summary = package.summary
+
+                    node.packages.append(new_package)
+
+                    db.session.add(new_package)
+            db.session.commit()
+        else:
+            # Verify package version
+            for package in node.packages:
+                if package in request_json.packages:
+                    pass
+                else:
+                    pass
+    else:
+        raise InvalidAPIUsage('Invalid request method', status_code=400)
