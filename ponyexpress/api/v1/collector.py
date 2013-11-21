@@ -22,23 +22,23 @@ def dataimport():
 
         request_json = request.get_json()
 
-        node = Node.query.filter_by(name=request_json.node).first()
+        node = Node.query.filter_by(name=request_json['node']).first()
 
         if not node:
             # Add node
-            node = Node(request_json.node)
+            node = Node(request_json['node'])
             db.session.add(node)
 
             #add the packages
-            for package in request_json.packages:
-                if package.sha:
-                    new_package = Package(package.sha, package.name, package.version)
+            for package in request_json['packages']:
+                if 'sha' in package.keys():
+                    new_package = Package(package['sha'], package['name'], package['version'])
 
                     # Set extended attributes as well
-                    new_package.uri = package.uri
-                    new_package.architecture = package.architecture
-                    new_package.provider = package.provider
-                    new_package.summary = package.summary
+                    new_package.uri = package['uri']
+                    new_package.architecture = package['architecture']
+                    new_package.provider = package['provider']
+                    new_package.summary = package['summary']
 
                     node.packages.append(new_package)
 
