@@ -2,9 +2,10 @@
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from ponyexpress import app
-from ponyexpress import db
+from ponyexpress import *
+from ponyexpress.database import db
 
+app = create_app()
 
 manager = Manager(app)
 
