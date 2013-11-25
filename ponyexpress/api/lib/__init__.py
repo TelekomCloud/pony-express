@@ -14,18 +14,23 @@ def process_node_info(request_json):
         #add the packages
         for package in request_json['packages']:
             if 'sha' in package.keys():
-                new_package = Package(package['sha'], package['name'], package['version'])
+                # Package sha must be uniqe, so fetch the first object
+                p = Package.query.filter_by(sha=package['sha']).first()
+                if p:
+                    node.packages.append(p)
+                else:
+                    new_package = Package(package['sha'], package['name'], package['version'])
 
-                # Set extended attributes as well
-                new_package.uri = package['uri']
-                new_package.architecture = package['architecture']
-                new_package.provider = package['provider']
-                new_package.summary = package['summary']
+                    # Set extended attributes as well
+                    new_package.uri = package['uri']
+                    new_package.architecture = package['architecture']
+                    new_package.provider = package['provider']
+                    new_package.summary = package['summary']
 
-                node.packages.append(new_package)
+                    node.packages.append(new_package)
 
-                db.session.add(new_package)
-        db.session.commit()
+                    db.session.add(new_package)
+                db.session.commit()
     else:
         #prepare sha dict
         pp = {}
@@ -39,7 +44,24 @@ def process_node_info(request_json):
         for package in node.packages:
             if package.sha in pp.keys():
                 # we already know the sha, so same package
-                # verify if this packages
-                pass
+                if package.version == pp.version:
+                    pass
+                else:
+                    # same sha, but different version??
+                    pass
             else:
-                pass
+                # New package version
+                new_package = Package(pp['sha'], pp['name'], pp['version'])
+
+                # Set extended attributes as well
+                new_package.uri = pp['uri']
+                new_package.architecture = pp['architecture']
+                new_package.provider = pp['provider']
+                new_package.summary = pp['summary']
+
+                #replace the old package
+                package = new_package
+                db.session.add(new_package)
+        db.session.commit()
+
+
