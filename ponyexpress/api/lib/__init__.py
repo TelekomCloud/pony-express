@@ -42,14 +42,7 @@ def process_node_info(request_json):
 
         # Verify package version
         for package in node.packages:
-            if package.sha in pp.keys():
-                # we already know the sha, so same package
-                if package.version == pp.version:
-                    pass
-                else:
-                    # same sha, but different version??
-                    pass
-            else:
+            if package.sha not in pp.keys():
                 # New package version
                 new_package = Package(pp['sha'], pp['name'], pp['version'])
 
