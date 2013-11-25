@@ -1,21 +1,28 @@
-from flask import Blueprint, abort
+from flask import Blueprint, request, Response
 from ponyexpress.api.exceptions import *
+
+from ponyexpress.api.lib import *
 
 collector = Blueprint('collector', __name__)
 
 @collector.route('/v1/collector')
+def default():
+    raise InvalidAPIUsage('Invalid request method', status_code=400)
+
+@collector.route('/v1/collector', methods=['POST','PUT'])
 def dataimport():
-    #
+    """Import json formated package information from a node.
+    Store this information into a database for later querying
+    """
 
-    #recieve put/post data and parse the json data structure
-    #create or update the node and package information in the database
-    #
+    # Safeguard
+    if request.method == 'PUT' or request.method == 'POST':
 
-    #return json
+        request_json = request.get_json()
 
-    raise InvalidAPIUsage('This view is gone', status_code=410)
+        process_node_info(request_json)
 
-    #try:
-    #    return ''
-    #except Exception, e:
-    #    raise InvalidUsage('This view is gone', status_code=410)
+        #TODO: return node object?
+        return Response(status=200)
+    else:
+        raise InvalidAPIUsage('Invalid request method', status_code=400)
