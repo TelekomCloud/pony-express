@@ -3,9 +3,7 @@
 import unittest
 from ponyexpress import *
 from ponyexpress.database import db
-
-#from ponyexpress.models.package import Package
-#from ponyexpress.models.node import Node
+from ponyexpress.api.lib import *
 
 #=================================
 # TODO, we will stub this for now
@@ -13,6 +11,45 @@ from ponyexpress.database import db
 
 
 class TestServerBase(unittest.TestCase):
+
+    DATA1 = {
+        "node": "node1",
+        "packages": [
+            {
+                "name": "openstack-deploy",
+                "uri": "http://mirror1/packages/openstack-deploy.1.0.deb",
+                "version": "1.0",
+                "summary": "OpenStack deployment package",
+                "sha": "29ed26cf3b18b0d9988be08da9086f180f3f01fb",
+                "provider": "apt",
+                "architecture": "amd64",
+            }
+        ]
+    }
+
+    DATA2 = {
+        "node": "node2",
+        "packages": [
+            {
+                "name": "openstack-deploy",
+                "uri": "http://mirror1/packages/openstack-deploy.1.0.deb",
+                "version": "1.0",
+                "summary": "OpenStack deployment package",
+                "sha": "29ed26cf3b18b0d9988be08da9086f180f3f01fb",
+                "provider": "apt",
+                "architecture": "amd64",
+            },
+            {
+                "name": "openstack-nova",
+                "uri": "http://mirror1/packages/openstack-nova.2013.1.0.deb",
+                "version": "2013.1.0",
+                "summary": "OpenStack nova package",
+                "sha": "f2ec2e82794591f1ec04d4a31df860390a688fd8",
+                "provider": "apt",
+                "architecture": "amd64",
+            }
+        ]
+    }
 
     def setUp(self):
         # Set test environment and load test config
@@ -37,9 +74,7 @@ class TestServerBase(unittest.TestCase):
 
         # Drop the db
         db.drop_all()
-        pass
 
     def addNode(self, node_dict):
         # TODO: a method to add nodes for test purposes
-        #ponyexpress.api.lib.process_node_import(node_dict)
-        pass
+        process_node_info(node_dict)

@@ -21,3 +21,6 @@ class Package(db.Model):
 
     def __repr__(self):
         return '<Package %r>' % (self.name)
+
+    def __str__(self):
+        return '{"id": %r, "name": %r, "version": %r}' % (self.sha, self.name, self.version)
