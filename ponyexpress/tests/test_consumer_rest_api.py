@@ -45,6 +45,7 @@ class BasicTestCaseV1(TestServerBase):
         self.addNode(self.DATA['node1'])
         j = self.get_json('/v1/nodes')
         eq_(type(j[0]), dict)
+        eq_(j[0]['id'], self.DATA['node1']['id'])
 
     def testRequestNode(self):
         self.addNode(self.DATA['node1'])
