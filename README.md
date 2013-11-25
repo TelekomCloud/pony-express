@@ -6,6 +6,19 @@ Manage your package landscape.
 
 **Under construction...**
 
+# Running
+
+To run the pony-express server:
+
+    python manage.py runserver
+
+To create and/or migrate the database run:
+
+    python manage.py db migrate
+
+To update the database to the latest state after migrations have been added, run:
+
+    python manage.py db upgrade
 
 # Tests
 
