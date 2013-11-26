@@ -1,0 +1,8 @@
+#Package requirements for pony-express
+
+flask>=0.10.1
+flask-script>=0.6.3
+flask-sqlalchemy>=1.0
+flask-migrate>=0.1.4
+setuptools
+nose
