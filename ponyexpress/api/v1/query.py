@@ -61,7 +61,6 @@ def nodes():
 
 @query.route('/v1/node/<fqdn>', methods=['GET'])
 def node(fqdn):
-    full = request.args.get('full', True)
 
     if fqdn != '':
         q_node = Node.query.filter_by(name=fqdn).first()
@@ -72,18 +71,17 @@ def node(fqdn):
                 'packages': []
             }
 
-            if full is not None:
-                for i in q_node.packages:
-                    r_p = {
-                        'id': i.sha,
-                        'name': i.name,
-                        'version': i.version,
-                        'summary': '',
-                        'uri': i.uri,
-                        'provider': '',
-                        'architecture': '',
-                    }
-                    r_node['packages'].append(r_p)
+            for i in q_node.packages:
+                r_p = {
+                    'id': i.sha,
+                    'name': i.name,
+                    'version': i.version,
+                    'summary': '',
+                    'uri': i.uri,
+                    'provider': '',
+                    'architecture': '',
+                }
+                r_node['packages'].append(r_p)
 
             return Response(json.dumps(r_node), mimetype='application/json')
         else:

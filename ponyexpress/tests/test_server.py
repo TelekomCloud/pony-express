@@ -11,6 +11,12 @@ from ponyexpress.api.lib import *
 
 class TestServerBase(unittest.TestCase):
 
+    DATA_E = {
+        "node": "node1",
+        "packages": [
+        ]
+    }
+
     DATA1 = {
         "node": "node1",
         "packages": [
@@ -19,7 +25,7 @@ class TestServerBase(unittest.TestCase):
                 "uri": "http://mirror1/packages/openstack-deploy.1.0.deb",
                 "version": "1.0",
                 "summary": "OpenStack deployment package",
-                "sha": "29ed26cf3b18b0d9988be08da9086f180f3f01fb",
+                "sha256": "29ed26cf3b18b0d9988be08da9086f180f3f01fb",
                 "provider": "apt",
                 "architecture": "amd64",
             }
@@ -34,7 +40,7 @@ class TestServerBase(unittest.TestCase):
                 "uri": "http://mirror1/packages/openstack-deploy.1.0.deb",
                 "version": "1.0",
                 "summary": "OpenStack deployment package",
-                "sha": "29ed26cf3b18b0d9988be08da9086f180f3f01fb",
+                "sha256": "29ed26cf3b18b0d9988be08da9086f180f3f01fb",
                 "provider": "apt",
                 "architecture": "amd64",
             },
@@ -43,7 +49,7 @@ class TestServerBase(unittest.TestCase):
                 "uri": "http://mirror1/packages/openstack-nova.2013.1.0.deb",
                 "version": "2013.1.0",
                 "summary": "OpenStack nova package",
-                "sha": "f2ec2e82794591f1ec04d4a31df860390a688fd8",
+                "sha256": "f2ec2e82794591f1ec04d4a31df860390a688fd8",
                 "provider": "apt",
                 "architecture": "amd64",
             }
@@ -58,7 +64,7 @@ class TestServerBase(unittest.TestCase):
                 "uri": "http://mirror1/packages/openstack-deploy.2.0.deb",
                 "version": "2.0",
                 "summary": "OpenStack deployment package",
-                "sha": "aaed26cf3b18b0d9988be08da9086f180f3f01fb",
+                "sha256": "aaed26cf3b18b0d9988be08da9086f180f3f01fb",
                 "provider": "apt",
                 "architecture": "amd64",
             },
@@ -67,7 +73,7 @@ class TestServerBase(unittest.TestCase):
                 "uri": "http://mirror1/packages/openstack-nova.2013.2.0.deb",
                 "version": "2013.2.0",
                 "summary": "OpenStack nova package",
-                "sha": "bbec2e82794591f1ec04d4a31df860390a688fd8",
+                "sha256": "bbec2e82794591f1ec04d4a31df860390a688fd8",
                 "provider": "apt",
                 "architecture": "amd64",
             }
@@ -108,8 +114,8 @@ class TestServerBase(unittest.TestCase):
         """A method to add nodes for test purposes"""
 
         # Add some sample data
-        process_node_info(self.DATA1)
+        #process_node_info(self.DATA1)
 
-        process_node_info(self.DATA3)
+        #process_node_info(self.DATA3)
 
         process_node_info(node_dict)
