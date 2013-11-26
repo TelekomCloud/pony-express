@@ -2,6 +2,12 @@ import os
 
 _basedir = os.path.abspath(os.path.dirname(__file__))
 
+#TODO: set up logging
+import logging
+
+logging.basicConfig(filename=os.path.join(_basedir, '../../log/server.log'), level=logging.DEBUG)
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
 
 class DefaultConfig(object):
     DEBUG = False
@@ -14,9 +20,11 @@ class ProductionConfig(DefaultConfig):
 
 
 class DevelopmentConfig(DefaultConfig):
+    #SQLALCHEMY_ECHO = True
     DEBUG = True
 
 
 class TestingConfig(DefaultConfig):
     TESTING = True
+    SQLALCHEMY_ECHO = True
     SQLALCHEMY_DATABASE_URI = 'sqlite://'

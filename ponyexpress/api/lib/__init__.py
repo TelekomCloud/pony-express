@@ -13,13 +13,13 @@ def process_node_info(request_json):
 
         #add the packages
         for package in request_json['packages']:
-            if 'sha' in package.keys():
+            if 'sha256' in package.keys():
                 # Package sha must be uniqe, so fetch the first object
-                p = Package.query.filter_by(sha=package['sha']).first()
+                p = Package.query.filter_by(sha=package['sha256']).first()
                 if p:
                     node.packages.append(p)
                 else:
-                    new_package = Package(package['sha'], package['name'], package['version'])
+                    new_package = Package(package['sha256'], package['name'], package['version'])
 
                     # Set extended attributes as well
                     new_package.uri = package['uri']
@@ -36,15 +36,15 @@ def process_node_info(request_json):
         pp = {}
 
         for p in request_json['packages']:
-            if 'sha' in p.keys():
-                sha = p['sha']
+            if 'sha256' in p.keys():
+                sha = p['sha256']
                 pp[sha] = p
 
         # Verify package version
         for package in node.packages:
             if package.sha not in pp.keys():
                 # New package version
-                new_package = Package(pp['sha'], pp['name'], pp['version'])
+                new_package = Package(pp['sha256'], pp['name'], pp['version'])
 
                 # Set extended attributes as well
                 new_package.uri = pp['uri']

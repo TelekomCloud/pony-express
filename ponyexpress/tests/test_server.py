@@ -2,7 +2,6 @@
 
 import unittest
 from ponyexpress import *
-from ponyexpress.database import db
 from ponyexpress.api.lib import *
 
 #=================================
@@ -51,8 +50,34 @@ class TestServerBase(unittest.TestCase):
         ]
     }
 
+    DATA3 = {
+        "node": "node3",
+        "packages": [
+            {
+                "name": "openstack-deploy",
+                "uri": "http://mirror1/packages/openstack-deploy.2.0.deb",
+                "version": "2.0",
+                "summary": "OpenStack deployment package",
+                "sha": "aaed26cf3b18b0d9988be08da9086f180f3f01fb",
+                "provider": "apt",
+                "architecture": "amd64",
+            },
+            {
+                "name": "openstack-nova",
+                "uri": "http://mirror1/packages/openstack-nova.2013.2.0.deb",
+                "version": "2013.2.0",
+                "summary": "OpenStack nova package",
+                "sha": "bbec2e82794591f1ec04d4a31df860390a688fd8",
+                "provider": "apt",
+                "architecture": "amd64",
+            }
+        ]
+    }
+
     def setUp(self):
-        # Set test environment and load test config
+        """
+        Set test environment and load test config
+        """
 
         app = create_app()
 
@@ -69,6 +94,10 @@ class TestServerBase(unittest.TestCase):
             db.create_all(app=app)
 
     def tearDown(self):
+        """
+        Tear down the test case
+        """
+
         # Clean the db sessions
         db.session.remove()
 
@@ -76,5 +105,11 @@ class TestServerBase(unittest.TestCase):
         db.drop_all()
 
     def addNode(self, node_dict):
-        # TODO: a method to add nodes for test purposes
+        """A method to add nodes for test purposes"""
+
+        # Add some sample data
+        process_node_info(self.DATA1)
+
+        process_node_info(self.DATA3)
+
         process_node_info(node_dict)

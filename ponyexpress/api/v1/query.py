@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, json
+from flask import Blueprint, request, Response, json
 from ponyexpress.models.package import Package
 from ponyexpress.models.node import Node
 from ponyexpress.api.exceptions import *
@@ -6,29 +6,63 @@ from ponyexpress.api.exceptions import *
 query = Blueprint('query', __name__)
 
 
+def hypermedia_headers(uri, page, paginator):
+    #add pagination headers
+    link = []
+
+    if paginator.has_next:
+        url = '<http://%s?page=%s&limit=%s>; rel="next"' % (uri, paginator.next_num, paginator.per_page)
+        link.append(url)
+
+    if paginator.has_prev:
+        url = '<http://%s?page=%s&limit=%s>; rel="prev"' % (uri, paginator.prev_num, paginator.per_page)
+        link.append(url)
+
+    if page < paginator.pages:
+        url = '<http://%s?page=%s&limit=%s>; rel="last"' % (uri, paginator.pages, paginator.per_page)
+        link.append(url)
+
+    if page > 1 and paginator.pages > 1:
+        url = '<http://%s?page=%s&limit=%s>; rel="first"' % (uri, 1, paginator.per_page)
+        link.append(url)
+
+    headers = {
+        'Link': ','.join(link)
+    }
+
+    return headers
+
+
 @query.route('/v1/nodes', methods=['GET'])
-@query.route('/v1/nodes/<int:limit>/<int:offset>', methods=['GET'])
-def nodes(limit=10, offset=0):
+def nodes():
     result = []
 
-    if (0 < limit <= 50) and offset >= 0:
-        queried_nodes = Node.query.limit(limit).offset(offset)
+    limit = request.args.get('limit', 10)
+    page = request.args.get('page', 1)
+
+    if (10 <= limit <= 50) and page >= 1:
+        #queried_nodes = Node.query.limit(limit).offset(offset)
+        paginator = Node.query.paginate(page=page, per_page=limit, error_out=False)
     else:
-        raise InvalidAPIUsage('Not allowed to fetch more than 50 objects', 410)
+        raise InvalidAPIUsage('Invalid request', 410)
 
-    for n in queried_nodes:
-        res = {
-            'id': n.name,
-            'packages': [],
-        }
-        result.append(res)
+    if paginator:
+        for n in paginator.items:
+            res = {
+                'id': n.name,
+                'packages': [],
+            }
+            result.append(res)
 
-    return Response(json.dumps(result), mimetype='application/json')
+        headers = hypermedia_headers('localhost/v1/nodes', page, paginator)
+
+        return Response(json.dumps(result), mimetype='application/json',headers=headers)
 
 
 @query.route('/v1/node/<fqdn>', methods=['GET'])
-@query.route('/v1/node/<fqdn>/<full>', methods=['GET'])
-def node(fqdn, full=None):
+def node(fqdn):
+    full = request.args.get('full', True)
+
     if fqdn != '':
         q_node = Node.query.filter_by(name=fqdn).first()
 
@@ -57,28 +91,34 @@ def node(fqdn, full=None):
 
 
 @query.route('/v1/packages', methods=['GET'])
-@query.route('/v1/packages/<int:limit>/<int:offset>', methods=['GET'])
-def packages(limit=10, offset=0):
+def packages():
     result = []
 
-    if (0 < limit <= 50) and offset >= 0:
-        packages = Package.query.limit(limit).offset(offset)
+    limit = int(request.args.get('limit', 10))
+    page = int(request.args.get('page', 1))
+
+    if (10 <= limit <= 50) and page >= 1:
+        paginator = Package.query.paginate(page=page, per_page=limit, error_out=False)
     else:
-        raise InvalidAPIUsage('Not allowed to fetch more than 50 objects', 410)
+        raise InvalidAPIUsage('Invalid request', 410)
 
-    for p in packages:
-        r_p = {
-            'id': p.sha,
-            'name': p.name,
-            'version': p.version,
-            'summary': p.summary,
-            'uri': p.uri,
-            'provider': p.provider,
-            'architecture': p.architecture,
-        }
-        result.append(r_p)
+    if paginator.items:
+        for p in paginator.items:
+            r_p = {
+                'id': p.sha,
+                'name': p.name,
+                'version': p.version,
+                'summary': p.summary,
+                'uri': p.uri,
+                'provider': p.provider,
+                'architecture': p.architecture,
+            }
+            result.append(r_p)
 
-    return Response(json.dumps(result), mimetype='application/json')
+        #add pagination headers
+        headers = hypermedia_headers('packages', page, paginator)
+
+        return Response(json.dumps(result), mimetype='application/json', headers=headers)
 
 
 @query.route('/v1/package/<id>', methods=['GET'])

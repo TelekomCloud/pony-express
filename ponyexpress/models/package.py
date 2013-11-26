@@ -20,4 +20,4 @@ class Package(db.Model):
         self.version = version
 
     def __repr__(self):
-        return '<Package %r>' % (self.name)
+        return '<Package %r>' % self.name
