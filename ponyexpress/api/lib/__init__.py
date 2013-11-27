@@ -41,21 +41,27 @@ def process_node_info(request_json):
                 sha = p['sha256']
                 pp[sha] = p
 
-        # Verify package version
         for package in node.packages:
-            if package.sha not in pp.keys():
-                # New package version
-                new_package = Package(pp['sha256'], pp['name'], pp['version'])
+            if package.sha in pp.keys():
+                pp.pop(package.sha)
+            else:
+                node.packages.remove(package)
 
-                # Set extended attributes as well
-                new_package.uri = pp['uri']
-                new_package.architecture = pp['architecture']
-                new_package.provider = pp['provider']
-                new_package.summary = pp['summary']
+        # Now we have a list of packages which have been updated
+        # Figure out if we need to update
+        for p in pp:
+            np = pp[p]
 
-                #replace the old package
-                package = new_package
-                db.session.add(new_package)
+            new_package = Package(p, np['name'], np['version'])
+
+            # Set extended attributes as well
+            new_package.uri = np['uri']
+            new_package.architecture = np['architecture']
+            new_package.provider = np['provider']
+            new_package.summary = np['summary']
+
+            node.packages.append(new_package)
+
         db.session.commit()
 
 

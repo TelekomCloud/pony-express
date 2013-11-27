@@ -66,7 +66,7 @@ class BasicTestCaseV1(TestServerBase):
             }
         ]
         """
-        
+
         eq_(j[0]["name"], p["name"])
         eq_(type(j[0]["versions"]), list)
         eq_(len(j[0]["versions"]), 2)
