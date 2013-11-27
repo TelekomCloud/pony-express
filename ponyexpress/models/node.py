@@ -18,4 +18,4 @@ class Node(db.Model):
         self.name = name
 
     def __repr__(self):
-        return '<Node %r>' % (self.name)
+        return '<Node %r>' % self.name

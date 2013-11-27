@@ -8,6 +8,9 @@
 # Databases
 *.db
 
+# Logs
+*.log
+
 # Packages
 *.egg
 *.egg-info

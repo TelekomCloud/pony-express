@@ -28,6 +28,9 @@ setup(
     },
     install_requires=[
         'flask',
+        'flask-script',
+        'flask-sqlalchemy',
+        'flask-migrate',
         'setuptools',
         'nose',
     ],

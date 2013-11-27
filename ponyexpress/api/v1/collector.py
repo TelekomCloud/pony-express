@@ -9,7 +9,7 @@ collector = Blueprint('collector', __name__)
 def default():
     raise InvalidAPIUsage('Invalid request method', status_code=400)
 
-@collector.route('/v1/collector', methods=['POST','PUT'])
+@collector.route('/v1/collector', methods=['POST', 'PUT'])
 def dataimport():
     """Import json formated package information from a node.
     Store this information into a database for later querying
