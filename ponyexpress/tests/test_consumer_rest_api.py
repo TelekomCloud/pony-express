@@ -51,6 +51,7 @@ class BasicTestCaseV1(TestServerBase):
         j = self.get_json('/v1/packages')
         eq_(type(j), list)
         #eq_(len(j), 2)
+
         """
         [
             {
@@ -65,6 +66,7 @@ class BasicTestCaseV1(TestServerBase):
             }
         ]
         """
+        
         eq_(j[0]["name"], p["name"])
         eq_(type(j[0]["versions"]), list)
         eq_(len(j[0]["versions"]), 2)
@@ -83,3 +85,6 @@ class BasicTestCaseV1(TestServerBase):
         eq_(j["architecture"], p["architecture"])
         eq_(j["id"], p["sha256"])
         eq_(j["provider"], p["provider"])
+
+        eq_(type(j['nodes']), list)
+        eq_(len(j['nodes']), 1)
