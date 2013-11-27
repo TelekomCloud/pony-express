@@ -56,12 +56,11 @@ def nodes():
 
         headers = hypermedia_headers('localhost/v1/nodes', page, paginator)
 
-        return Response(json.dumps(result), mimetype='application/json',headers=headers)
+        return Response(json.dumps(result), mimetype='application/json', headers=headers)
 
 
 @query.route('/v1/node/<fqdn>', methods=['GET'])
 def node(fqdn):
-
     if fqdn != '':
         q_node = Node.query.filter_by(name=fqdn).first()
 
@@ -96,22 +95,33 @@ def packages():
     page = int(request.args.get('page', 1))
 
     if (10 <= limit <= 50) and page >= 1:
-        paginator = Package.query.paginate(page=page, per_page=limit, error_out=False)
+        paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
+                                                                                            error_out=False)
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
     if paginator.items:
         for p in paginator.items:
-            r_p = {
-                'id': p.sha,
-                'name': p.name,
-                'version': p.version,
-                'summary': p.summary,
-                'uri': p.uri,
-                'provider': p.provider,
-                'architecture': p.architecture,
-            }
-            result.append(r_p)
+            l = len(result)
+            index = ((l - 1), 0)[0 > (l - 1)]
+
+            if l > 0 and result[index]['name'] == p.name:
+                r = result[index]
+                ver = {'version': p.version, 'id': p.sha}
+                r['versions'].append(ver)
+            else:
+                r_p = {
+                    'name': p.name,
+                    'versions': [],
+                    'summary': p.summary,
+                    'uri': p.uri,
+                    'provider': p.provider,
+                    'architecture': p.architecture,
+                }
+                ver = {'version': p.version, 'id': p.sha}
+                r_p['versions'].append(ver)
+
+                result.append(r_p)
 
         #add pagination headers
         headers = hypermedia_headers('packages', page, paginator)
@@ -121,22 +131,18 @@ def packages():
 
 @query.route('/v1/package/<id>', methods=['GET'])
 def package(id):
-
     if id != '':
         package = Package.query.filter_by(sha=id).first()
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
 
     if package:
-        result = {
-            'id': package.sha,
-            'name': package.name,
-            'version': package.version,
-            'summary': package.summary,
-            'uri': package.uri,
-            'provider': package.provider,
-            'architecture': package.architecture,
-        }
+        result = {'id': package.sha, 'name': package.name, 'version': package.version, 'summary': package.summary,
+                  'uri': package.uri, 'provider': package.provider, 'architecture': package.architecture,
+                  'nodes': []}
+
+        for n in package.nodes:
+            result['nodes'].append({'fqdn': n.name})
 
         return Response(json.dumps(result), mimetype='application/json')
     else:
