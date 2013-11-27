@@ -46,11 +46,29 @@ class BasicTestCaseV1(TestServerBase):
 
     def testRequestPackages(self):
         self.addNode(self.DATA2)
+        self.addNode(self.DATA3)
         p = self.DATA2['packages'][0]
         j = self.get_json('/v1/packages')
         eq_(type(j), list)
         #eq_(len(j), 2)
-        eq_(j[0]["id"], p["sha256"])
+        """
+        [
+            {
+                "name": "<package>",
+                "versions": [
+                    {
+                        "version": "1.0",
+                        "id": "<id>"
+                    }
+                ],
+                "summary": ""
+            }
+        ]
+        """
+        eq_(j[0]["name"], p["name"])
+        eq_(type(j[0]["versions"]), list)
+        eq_(len(j[0]["versions"]), 2)
+        eq_(j[0]["versions"][0]["id"], p["sha256"])
 
     def testRequestPackageInfo(self):
         self.addNode(self.DATA2)
