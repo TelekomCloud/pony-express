@@ -44,7 +44,7 @@ DATA_UPDATE3 = {
             "uri": "http://mirror1/packages/openstack-deploy.1.1.deb",
             "version": "1.1",
             "summary": "OpenStack deployment package",
-            "sha256": "29ed26cf3b18b0d9988be08da9086f180f3f01fb",
+            "sha256": "CCed26cf3b18b0d9988be08da9086f180f3f01fb",
             "provider": "apt",
             "architecture": "amd64",
         },
@@ -134,7 +134,7 @@ class TestAPILibrary(TestServerBase):
         # There need to be two packages stored in the db
         assert len(packages) == 2
 
-        package = Package.query.filter_by(sha='48a8d2c951f269661d943ed8b0ee355e42d675de').first()
+        package = Package.query.filter_by(sha=DATA_UPDATE2['packages'][0]['sha256']).first()
 
         assert package.name == 'openstack-deploy'
         assert package.version == '2.0'
@@ -150,6 +150,35 @@ class TestAPILibrary(TestServerBase):
         assert node.name == 'node1'
         assert node.packages.count() == 1
         assert node.packages[0].version == '1.0'
+
+
+    def test_node_import_package_update2(self):
+        """Test importing a node which exists in the db"""
+
+        process_node_info(DATA_UPDATE1)
+
+        # Reimport data to simulate subsequent updates
+        process_node_info(DATA_UPDATE1)
+
+        assert Node.query.count() == 1
+        assert Package.query.count() == 1
+
+        process_node_info(DATA_UPDATE3)
+
+        assert Node.query.count() == 1
+
+        assert Package.query.count() == 2
+
+        package = Package.query.filter_by(sha=DATA_UPDATE3['packages'][0]['sha256']).first()
+
+        assert package.name == 'openstack-deploy'
+        assert package.version == '1.1'
+
+        node = Node.query.filter_by(name=DATA_UPDATE3['node']).first()
+
+        assert node.name == DATA_UPDATE3['node']
+        assert node.packages.count() == 1
+        assert node.packages[0].version == DATA_UPDATE3['packages'][0]['version']
 
 
 if __name__ == '__main__':
