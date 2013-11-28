@@ -1,0 +1,20 @@
+Source: pony-express
+Section: python
+Priority: optional
+Maintainer: Christoph Kassen <c.kassen@telekom.de>
+Build-Depends:
+ debhelper (>= 8),
+ python (>= 2.6.6-3),
+ python-setuptools,
+ python-pip,
+ python-sqlite,
+X-Python-Version: >= 2.7
+Standards-Version: 3.9.4
+Homepage: https://github.com/TelekomCloud/pony-express
+
+Package: pony-express
+Architecture: all
+Depends:
+ ${misc:Depends},
+ ${python:Depends},
+Description: pony-express
