@@ -10,7 +10,7 @@ def create_app(environment='ponyexpress.config.configuration.DefaultConfig'):
     # Load configuration
     #TODO: load configuration depending on environment
     app.config.from_object(environment)
-    app.config.from_envvar(os.environ['PONYEXPRES_CFG'], True)
+    app.config.from_envvar('PONYEXPRES_CFG', True)
 
     # Database
     from ponyexpress.database import db
