@@ -12,7 +12,7 @@ _basedir = os.path.abspath(os.path.dirname(__file__))
 class DefaultConfig(object):
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///var/lib/ponyexpress/ponyexpress.db'
 
 
 class ProductionConfig(DefaultConfig):
