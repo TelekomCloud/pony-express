@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+if [ "$1" = "configure" ]
+then
+    . /usr/share/debconf/confmodule
+    if ! getent group ponyexpress > /dev/null 2>&1
+    then
+        addgroup --quiet --system ponyexpress >/dev/null
+    fi
+    if ! getent passwd ponyexpress > /dev/null 2>&1
+    then
+        adduser --quiet --system --home /var/lib/ponyexpress --ingroup ponyexpress --no-create-home --shell /bin/false ponyexpress
+    fi
+
+    chown ponyexpress:ponyexpress -R /var/lib/ponyexpress/ /etc/ponyexpress/
+    chmod 0700 /etc/ponyexpress/
+fi
+
+#DEBHELPER#
