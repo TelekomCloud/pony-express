@@ -12,7 +12,7 @@ _basedir = os.path.abspath(os.path.dirname(__file__))
 class DefaultConfig(object):
     DEBUG = False
     TESTING = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, '../../', 'ponyexpress.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 
 class ProductionConfig(DefaultConfig):
@@ -22,6 +22,7 @@ class ProductionConfig(DefaultConfig):
 class DevelopmentConfig(DefaultConfig):
     #SQLALCHEMY_ECHO = True
     DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(_basedir, '../../', 'ponyexpress.db')
 
 
 class TestingConfig(DefaultConfig):

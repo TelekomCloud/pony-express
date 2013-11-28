@@ -54,7 +54,7 @@ def nodes():
             }
             result.append(res)
 
-        headers = hypermedia_headers('localhost/v1/nodes', page, paginator)
+        headers = hypermedia_headers(request.base_url, page, paginator)
 
         return Response(json.dumps(result), mimetype='application/json', headers=headers)
 
@@ -124,7 +124,7 @@ def packages():
                 result.append(r_p)
 
         #add pagination headers
-        headers = hypermedia_headers('packages', page, paginator)
+        headers = hypermedia_headers(request.base_url, page, paginator)
 
         return Response(json.dumps(result), mimetype='application/json', headers=headers)
 
