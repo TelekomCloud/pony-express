@@ -11,19 +11,19 @@ def hypermedia_headers(uri, page, paginator):
     link = []
 
     if paginator.has_next:
-        url = '<http://%s?page=%s&limit=%s>; rel="next"' % (uri, paginator.next_num, paginator.per_page)
+        url = '<%s?page=%s&limit=%s>; rel="next"' % (uri, paginator.next_num, paginator.per_page)
         link.append(url)
 
     if paginator.has_prev:
-        url = '<http://%s?page=%s&limit=%s>; rel="prev"' % (uri, paginator.prev_num, paginator.per_page)
+        url = '<%s?page=%s&limit=%s>; rel="prev"' % (uri, paginator.prev_num, paginator.per_page)
         link.append(url)
 
     if page < paginator.pages:
-        url = '<http://%s?page=%s&limit=%s>; rel="last"' % (uri, paginator.pages, paginator.per_page)
+        url = '<%s?page=%s&limit=%s>; rel="last"' % (uri, paginator.pages, paginator.per_page)
         link.append(url)
 
     if page > 1 and paginator.pages > 1:
-        url = '<http://%s?page=%s&limit=%s>; rel="first"' % (uri, 1, paginator.per_page)
+        url = '<%s?page=%s&limit=%s>; rel="first"' % (uri, 1, paginator.per_page)
         link.append(url)
 
     headers = {
