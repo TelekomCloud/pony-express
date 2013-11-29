@@ -5,8 +5,6 @@ from logging.config import fileConfig
 
 from flask import current_app
 
-from ponyexpress.config.configuration import DevelopmentConfig as AppConfig
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -15,8 +13,9 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-config.set_main_option('sqlalchemy.url', AppConfig.SQLALCHEMY_DATABASE_URI)
+print current_app.config['SQLALCHEMY_DATABASE_URI']
 
+config.set_main_option('sqlalchemy.url', current_app.config['SQLALCHEMY_DATABASE_URI'])
 target_metadata = current_app.extensions['migrate'].metadata
 
 # other values from the config, defined by the needs of env.py,

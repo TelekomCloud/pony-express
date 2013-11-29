@@ -142,7 +142,7 @@ def package(id):
                   'nodes': []}
 
         for n in package.nodes:
-            result['nodes'].append({'fqdn': n.name})
+            result['nodes'].append({'id': n.name})
 
         return Response(json.dumps(result), mimetype='application/json')
     else:
