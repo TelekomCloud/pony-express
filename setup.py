@@ -29,7 +29,7 @@ setup(
             'migrations/*py',
             'migrations/versions/*'
         ],
-        #'': ['README.md', 'LICENSE'],
+        '': ['README.md', 'LICENSE'],
     },
     scripts=['bin/ponyexpress'],
     install_requires=[
