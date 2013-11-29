@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -e
+
+case $1 in
+    purge)
+        if ( getent passwd ponyexpress) > /dev/null 2>&1; then
+            userdel ponyexpress || true
+        fi
+
+        if ( getent group ponyexpress) > /dev/null 2>&1; then
+            groupdel ponyexpress || true
+        fi
+
+        [ -e /var/lib/ponyexpress ] && rm -rf /var/lib/ponyexpress
+        ;;
+esac
+
+#DEBHELPER#
