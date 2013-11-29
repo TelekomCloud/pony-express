@@ -4,23 +4,16 @@ DIR="$( cd "$( dirname "${0}" )" && pwd )"
 
 # install pip dependencies
 
-vendor="${DIR}/vendor"
-if [ -d "${vendor}" ]
-then
+cd ${DIR}
 
-    virtualenv -p python2.7 "${DIR}/.venv/ponyexpress"
+virtualenv -p python2.7 "${DIR}/.venv/ponyexpress"
 
-    source "${DIR}/.venv/ponyexpress/bin/activate"
+source "${DIR}/.venv/ponyexpress/bin/activate"
 
-    #pip install --no-index --find-links "${vendor}" -r requirements.txt
+pip install -r "${DIR}/requirements.txt"
 
-    cd "${DIR}"
+python setup.py install
 
-    pip install -r "${DIR}/requirements.txt"
+${DIR}/bin/ponyexpress db upgrade -d ponyexpress/migrations
 
-    python setup.py install
-
-    $DIR/bin/ponyexpress db upgrade -d ponyexpress/migrations
-
-    exit 0
-fi
+exit 0

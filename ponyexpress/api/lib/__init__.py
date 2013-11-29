@@ -10,6 +10,7 @@ def process_node_info(request_json):
         # Add node
         node = Node(request_json['node'])
         db.session.add(node)
+        db.session.commit()
 
         #add the packages
         if request_json['packages']:
@@ -19,6 +20,7 @@ def process_node_info(request_json):
                     p = Package.query.filter_by(sha=package['sha256']).first()
                     if p:
                         node.packages.append(p)
+                        db.session.commit()
                     else:
                         new_package = Package(package['sha256'], package['name'], package['version'])
 
@@ -31,7 +33,7 @@ def process_node_info(request_json):
                         node.packages.append(new_package)
 
                         db.session.add(new_package)
-        db.session.commit()
+                        db.session.commit()
     else:
         #prepare sha dict
         pp = {}
@@ -46,6 +48,7 @@ def process_node_info(request_json):
                 pp.pop(package.sha)
             else:
                 node.packages.remove(package)
+                db.session.commit()
 
         # Now we have a list of packages which have been updated
         # Figure out if we need to update
@@ -62,6 +65,6 @@ def process_node_info(request_json):
 
             node.packages.append(new_package)
 
-        db.session.commit()
+            db.session.commit()
 
 

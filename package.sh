@@ -2,26 +2,19 @@
 
 # Package pip dependencies
 
-project_name="pony-express"
-basepath=`pwd`
+DIR="$( cd "$( dirname "${0}" )" && pwd )"
 
-project_path="${basepath}/../${project_name}"
+vendor="${DIR}/vendor"
 
-if [ -d "${project_path}" ]
-then
-    vendor="${project_path}/vendor"
+mkdir -p "${vendor}"
 
-    mkdir -p "${vendor}"
+pip install --download "${vendor}" -r requirements.txt
 
-    pip install --download "${vendor}" -r requirements.txt
+#cleanup
+rm -r "${DIR}/build/"
+rm -r "${DIR}/dist/"
+rm -r "${DIR}/*.egg-info/"
 
-    #cleanup
-    rm -r "${project_path}/build/"
-    rm -r "${project_path}/dist/"
-    rm -r "${project_path}/*.egg-info/"
+cd $DIR
 
-    cd "${project_path}/"
-
-    tar cvzf pony-express.tar.gz --exclude=.git --exclude=.idea .
-
-fi
+tar cvzf ../pony-express.tar.gz --exclude=.git --exclude=.idea .

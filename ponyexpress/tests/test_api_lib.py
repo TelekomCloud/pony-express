@@ -37,7 +37,7 @@ DATA_UPDATE2 = {
 }
 
 DATA_UPDATE3 = {
-    "node": "node1",
+    "node": "node3",
     "packages": [
         {
             "name": "openstack-deploy",
@@ -158,14 +158,14 @@ class TestAPILibrary(TestServerBase):
         process_node_info(DATA_UPDATE1)
 
         # Reimport data to simulate subsequent updates
-        process_node_info(DATA_UPDATE1)
+        #process_node_info(DATA_UPDATE1)
 
         assert Node.query.count() == 1
         assert Package.query.count() == 1
 
         process_node_info(DATA_UPDATE3)
 
-        assert Node.query.count() == 1
+        assert Node.query.count() == 2
 
         assert Package.query.count() == 2
 
