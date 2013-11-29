@@ -5,7 +5,7 @@ from ponyexpress.api.exceptions import *
 from ponyexpress.config.configuration import *
 
 
-def create_app(environment='ponyexpress.config.configuration.DefaultConfig'):
+def create_app(environment='ponyexpress.config.configuration.DevelopmentConfig'):
     app = Flask(__name__)
 
     # Load configuration
