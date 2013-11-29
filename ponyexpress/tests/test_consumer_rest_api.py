@@ -88,3 +88,5 @@ class BasicTestCaseV1(TestServerBase):
 
         eq_(type(j['nodes']), list)
         eq_(len(j['nodes']), 1)
+        eq_(type(j['nodes'][0]), dict)
+        eq_(j['nodes'][0]['id'], 'node2')

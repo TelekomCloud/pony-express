@@ -8,6 +8,9 @@
 # Databases
 *.db
 
+# Vendor pacakges
+vendor/*
+
 # Logs
 *.log
 
