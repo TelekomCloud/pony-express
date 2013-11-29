@@ -22,10 +22,16 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), "r") as f:
 setup(
     name="ponyexpress",
     version="0.1",
-    packages=find_packages(),
+    packages=find_packages(where='.'),
     package_data={
-        '': ['README.md', 'LICENSE'],
+        "ponyexpress": [
+            'migrations/*ini',
+            'migrations/*py',
+            'migrations/versions/*'
+        ],
+        #'': ['README.md', 'LICENSE'],
     },
+    scripts=['bin/ponyexpress'],
     install_requires=[
         'flask',
         'flask-script',
