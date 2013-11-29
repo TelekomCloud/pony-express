@@ -37,10 +37,10 @@ def hypermedia_headers(uri, page, paginator):
 def nodes():
     result = []
 
-    limit = request.args.get('limit', 10)
+    limit = request.args.get('limit', 100)
     page = request.args.get('page', 1)
 
-    if (10 <= limit <= 50) and page >= 1:
+    if (10 <= limit <= 100) and page >= 1:
         #queried_nodes = Node.query.limit(limit).offset(offset)
         paginator = Node.query.paginate(page=page, per_page=limit, error_out=False)
     else:
@@ -93,10 +93,10 @@ def node(fqdn):
 def packages():
     result = []
 
-    limit = int(request.args.get('limit', 10))
+    limit = int(request.args.get('limit', 100))
     page = int(request.args.get('page', 1))
 
-    if (10 <= limit <= 50) and page >= 1:
+    if (10 <= limit <= 100) and page >= 1:
         paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
                                                                                             error_out=False)
     else:
