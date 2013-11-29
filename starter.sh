@@ -6,4 +6,4 @@ DIR="$( cd "$( dirname "${0}" )" && pwd )"
 
 source "${DIR}/.venv/ponyexpress/bin/activate"
 
-$DIR/bin/ponyexpress runserver --no-debug --no-reload -t 0.0.0.0 &
+$DIR/bin/ponyexpress runserver --no-debug --no-reload -t 0.0.0.0 -p 5555 &
