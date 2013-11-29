@@ -17,10 +17,6 @@ fileConfig(config.config_file_name)
 print current_app.config['SQLALCHEMY_DATABASE_URI']
 
 config.set_main_option('sqlalchemy.url', current_app.config['SQLALCHEMY_DATABASE_URI'])
-#config.set_main_option('sqlalchemy.url', 'sqlite://')
-
-#target_metadata = db.metadata
-
 target_metadata = current_app.extensions['migrate'].metadata
 
 # other values from the config, defined by the needs of env.py,
