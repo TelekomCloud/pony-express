@@ -13,9 +13,14 @@ then
     source "${DIR}/.venv/ponyexpress/bin/activate"
 
     #pip install --no-index --find-links "${vendor}" -r requirements.txt
-    pip install -r requirements.txt
+
+    cd "${DIR}"
+
+    pip install -r "${DIR}/requirements.txt"
 
     python setup.py install
 
     $DIR/bin/ponyexpress db upgrade -d ponyexpress/migrations
+
+    exit 0
 fi

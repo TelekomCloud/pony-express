@@ -20,8 +20,8 @@ then
     rm -r "${project_path}/dist/"
     rm -r "${project_path}/*.egg-info/"
 
-    cd "${project_path}/../"
+    cd "${project_path}/"
 
-    tar cvzf pony-express.tar.gz --exclude=.git --exclude=.idea pony-express
+    tar cvzf pony-express.tar.gz --exclude=.git --exclude=.idea .
 
 fi

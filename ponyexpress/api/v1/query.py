@@ -127,6 +127,8 @@ def packages():
         headers = hypermedia_headers(request.base_url, page, paginator)
 
         return Response(json.dumps(result), mimetype='application/json', headers=headers)
+    else:
+        raise InvalidAPIUsage('Invalid API usage', 410)
 
 
 @query.route('/v1/package/<id>', methods=['GET'])
