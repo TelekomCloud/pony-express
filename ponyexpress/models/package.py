@@ -4,7 +4,7 @@ from ponyexpress.database import db
 class Package(db.Model):
     __tablename__ = 'packages'
 
-    sha = db.Column(db.String(64), primary_key=True, unique=True)
+    sha = db.Column(db.String(64), primary_key=True)
     name = db.Column(db.String(255))
     version = db.Column(db.String(64))
 

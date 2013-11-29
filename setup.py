@@ -21,15 +21,15 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), "r") as f:
 
 setup(
     name="ponyexpress",
-    version="0.1",
+    version="0.3",
     packages=find_packages(where='.'),
     package_data={
-        "ponyexpress": [
+        'ponyexpress': [
             'migrations/*ini',
             'migrations/*py',
-            'migrations/versions/*'
+            'migrations/versions/*',
         ],
-        '': ['README.md', 'LICENSE'],
+        '': ['README.md', 'LICENSE']
     },
     scripts=['bin/ponyexpress'],
     install_requires=[

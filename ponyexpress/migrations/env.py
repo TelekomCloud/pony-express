@@ -13,8 +13,6 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-print current_app.config['SQLALCHEMY_DATABASE_URI']
-
 config.set_main_option('sqlalchemy.url', current_app.config['SQLALCHEMY_DATABASE_URI'])
 target_metadata = current_app.extensions['migrate'].metadata
 
