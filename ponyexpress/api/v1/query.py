@@ -37,8 +37,8 @@ def hypermedia_headers(uri, page, paginator):
 def nodes():
     result = []
 
-    limit = request.args.get('limit', 100)
-    page = request.args.get('page', 1)
+    limit = int(request.args.get('limit', 100))
+    page = int(request.args.get('page', 1))
 
     if (10 <= limit <= 100) and page >= 1:
         #queried_nodes = Node.query.limit(limit).offset(offset)
