@@ -1,12 +1,10 @@
 #!/usr/bin/make -f
 
 # Uncomment this to turn on verbose mode.
-export DH_VERBOSE=1
-
-#export PYBUILD_DESTDIR_python2=debian/python-aptexport/
+#export DH_VERBOSE=1
 
 %:
-	dh $@ --with python-virtualenv
+	dh $@ --with python2 --buildsystem=python_distutils
 
 override_dh_clean:
 	find -type f -name *.pyc -delete

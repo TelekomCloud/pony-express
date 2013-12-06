@@ -1,4 +1,4 @@
-Source: pony-express
+Source: ponyexpress
 Section: python
 Priority: extra
 Maintainer: TelekomCloud <bmp@telekom.de>
@@ -7,17 +7,20 @@ Build-Depends:
  debhelper (>= 8),
  python,
  python-setuptools,
- python-pip,
 X-Python-Version: >= 2.7
 Standards-Version: 3.9.4
 Homepage: http://github.com/TelekomCloud/pony-express
 Vcs-Browser: https://github.com/TelekomCloud/pony-express
 Vcs-Git: git://github.com/TelekomCloud/pony-express.git
 
-Package: pony-express
+Package: ponyexpress
 Architecture: all
 Depends:
  ${misc:Depends},
  ${python:Depends},
- python-pysqlite,
+ python-sqlite,
+ python-flask,
+ python-flask-migrate,
+ python-flask-script,
 Description: pony-express
+ FIXME
