@@ -1,5 +1,6 @@
 ponyexpress (0.3-1) precise; urgency=low
 
+  [ Christoph Kassen ]
   * Initial release.
 
- -- Christoph Kassen <c.kassen@telekom.de>  Thu, 28 Nov 2013 0:00:00 +0100
+ -- Thomas Bechtold <t.bechtold@telekom.de>  Fri, 06 Dec 2013 13:05:35 +0100
