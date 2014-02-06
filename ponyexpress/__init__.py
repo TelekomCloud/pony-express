@@ -5,12 +5,13 @@ from ponyexpress.api.exceptions import *
 from ponyexpress.config.configuration import *
 
 
-def create_app(environment='ponyexpress.config.configuration.DevelopmentConfig'):
+def create_app(environment='ponyexpress.config.configuration.ProductionConfig'):
     app = Flask(__name__)
 
     # Load configuration
     #TODO: load configuration depending on environment
     app.config.from_object(environment)
+    app.config.from_pyfile('/etc/pony-express/ponyexpress.cfg', True)
     app.config.from_envvar('PONYEXPRES_CFG', True)
 
     # Database
