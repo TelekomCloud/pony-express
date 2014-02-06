@@ -16,6 +16,8 @@ then
 
     chown ponyexpress:ponyexpress -R /var/lib/ponyexpress/ /etc/ponyexpress/
     chmod 0700 /etc/ponyexpress/
+
+    cd /usr/pyshared/ponyexpress && /usr/bin/ponyexpress db upgrade
 fi
 
 #DEBHELPER#
