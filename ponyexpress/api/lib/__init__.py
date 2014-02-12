@@ -1,6 +1,27 @@
+import hashlib
 from ponyexpress.database import db
 from ponyexpress.models.package import Package
 from ponyexpress.models.node import Node
+
+
+def create_package(node, package):
+    p = Package.query.filter_by(sha=package['sha256']).first()
+    if p:
+        node.packages.append(p)
+        db.session.commit()
+    else:
+        new_package = Package(package['sha256'], package['name'], package['version'])
+
+        # Set extended attributes as well
+        new_package.uri = package['uri']
+        new_package.architecture = package['architecture']
+        new_package.provider = package['provider']
+        new_package.summary = package['summary']
+
+        node.packages.append(new_package)
+
+        db.session.add(new_package)
+        db.session.commit()
 
 
 def process_node_info(request_json):
@@ -15,25 +36,14 @@ def process_node_info(request_json):
         #add the packages
         if request_json['packages']:
             for package in request_json['packages']:
-                if 'sha256' in package.keys():
+                if 'sha256' in package.keys() and package['sha256'] != '':
                     # Package sha must be uniqe, so fetch the first object
-                    p = Package.query.filter_by(sha=package['sha256']).first()
-                    if p:
-                        node.packages.append(p)
-                        db.session.commit()
-                    else:
-                        new_package = Package(package['sha256'], package['name'], package['version'])
-
-                        # Set extended attributes as well
-                        new_package.uri = package['uri']
-                        new_package.architecture = package['architecture']
-                        new_package.provider = package['provider']
-                        new_package.summary = package['summary']
-
-                        node.packages.append(new_package)
-
-                        db.session.add(new_package)
-                        db.session.commit()
+                    create_package(node, package)
+                else:
+                    if 'name' in package.keys() and 'version' in package.keys():
+                        sha = hashlib.sha256(package['name'] + package['version'])
+                        package['sha256'] = sha.hexdigest()
+                        create_package(node, package)
     else:
         #prepare sha dict
         pp = {}
@@ -43,12 +53,18 @@ def process_node_info(request_json):
                 sha = p['sha256']
                 pp[sha] = p
 
+        to_remove = []
         for package in node.packages:
             if package.sha in pp.keys():
                 pp.pop(package.sha)
             else:
-                node.packages.remove(package)
-                db.session.commit()
+                # Remove the association
+                to_remove.append(package)
+
+        if to_remove:
+            for r in to_remove:
+                node.packages.remove(r)
+            db.session.commit()
 
         # Now we have a list of packages which have been updated
         # Figure out if we need to update
