@@ -155,13 +155,16 @@ class TestAPILibrary(TestServerBase):
     def test_node_import_package_update2(self):
         """Test importing a node which exists in the db"""
 
-        data_install = self.process_data('data/install.txt')
+        path = os.path.dirname(__file__)
+        datafile = os.path.join(path, 'data/install.txt')
+        data_install = self.process_data(datafile)
         process_node_info(data_install)
 
         assert Node.query.count() == 1
         assert Package.query.count() == len(data_install['packages'])
 
-        data_update = self.process_data('data/upgrade.txt')
+        datafile = os.path.join(path, 'data/upgrade.txt')
+        data_update = self.process_data(datafile)
         process_node_info(data_update)
 
         assert Node.query.count() == 1
