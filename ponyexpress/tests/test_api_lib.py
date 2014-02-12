@@ -155,30 +155,35 @@ class TestAPILibrary(TestServerBase):
     def test_node_import_package_update2(self):
         """Test importing a node which exists in the db"""
 
-        process_node_info(DATA_UPDATE1)
-
-        # Reimport data to simulate subsequent updates
-        #process_node_info(DATA_UPDATE1)
+        path = os.path.dirname(__file__)
+        datafile = os.path.join(path, 'data/install.txt')
+        data_install = self.process_data(datafile)
+        process_node_info(data_install)
 
         assert Node.query.count() == 1
-        assert Package.query.count() == 1
+        assert Package.query.count() == len(data_install['packages'])
 
-        process_node_info(DATA_UPDATE3)
+        datafile = os.path.join(path, 'data/upgrade.txt')
+        data_update = self.process_data(datafile)
+        process_node_info(data_update)
 
-        assert Node.query.count() == 2
+        assert Node.query.count() == 1
+        # Not ideal, but the easiest way
+        print Package.query.count()
+        assert Package.query.count() == 559
 
-        assert Package.query.count() == 2
+        # Must update this sha if you change install.txt and or upgrade.txt
+        package = Package.query.filter_by(sha='26608ec5e9ec05894eaea23d7b00855b6f7680a58385e1f825836a097ac09e90').first()
 
-        package = Package.query.filter_by(sha=DATA_UPDATE3['packages'][0]['sha256']).first()
+        assert package.name == 'grub-common'
+        assert package.version == '1.99-21ubuntu3.14'
 
-        assert package.name == 'openstack-deploy'
-        assert package.version == '1.1'
+        # Must have two packages of grub-common
+        packages = Package.query.filter_by(name='grub-common').all()
+        assert len(packages) == 2
 
-        node = Node.query.filter_by(name=DATA_UPDATE3['node']).first()
-
-        assert node.name == DATA_UPDATE3['node']
-        assert node.packages.count() == 1
-        assert node.packages[0].version == DATA_UPDATE3['packages'][0]['version']
+        np = Node.query.filter(Node.packages.any(name='grub-common')).all()
+        assert len(np) == 1
 
 
 if __name__ == '__main__':

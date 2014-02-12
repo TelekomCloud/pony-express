@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import json
 from ponyexpress import *
 from ponyexpress.api.lib import *
 
@@ -31,7 +32,7 @@ class TestServerBase(unittest.TestCase):
             }
         ]
     }
-#12b3c40ab9ef0785e31a66f2b8ecd3b57e3c8085a082aae42c3eb5dcea3210c2
+
     DATA2 = {
         "node": "node2",
         "packages": [
@@ -119,3 +120,11 @@ class TestServerBase(unittest.TestCase):
         #process_node_info(self.DATA3)
 
         process_node_info(node_dict)
+
+    def process_data(self, filename):
+        json_data = open(filename)
+
+        data = json.load(json_data)
+        json_data.close()
+
+        return data
