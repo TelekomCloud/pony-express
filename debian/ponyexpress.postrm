@@ -12,7 +12,7 @@ case $1 in
             groupdel ponyexpress || true
         fi
 
-        [ -e /var/lib/ponyexpress ] && rm -rf /var/lib/ponyexpress
+        [ -e /var/lib/pony-express ] && rm -rf /var/lib/pony-express
         ;;
 esac
 

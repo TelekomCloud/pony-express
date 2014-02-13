@@ -31,6 +31,7 @@ setup(
         ],
         '': ['README.md', 'LICENSE']
     },
+    data_files=[('/etc/pony-express', ['config/ponyexpress.cfg'])],
     scripts=['bin/ponyexpress'],
     install_requires=[
         'flask',
