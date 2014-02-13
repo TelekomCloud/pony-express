@@ -14,10 +14,11 @@ then
         adduser --quiet --system --home /var/lib/pony-express --ingroup ponyexpress --no-create-home --shell /bin/false ponyexpress
     fi
 
+    cd /usr/share/pyshared/ponyexpress && /usr/bin/ponyexpress db upgrade
+
     chown ponyexpress:ponyexpress -R /var/lib/pony-express/ /etc/pony-express/
     chmod 0700 /etc/pony-express/
 
-    cd /usr/share/pyshared/ponyexpress && su ponyexpress - /usr/bin/ponyexpress db upgrade
 fi
 
 #DEBHELPER#
