@@ -21,7 +21,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), "r") as f:
 
 setup(
     name="ponyexpress",
-    version="0.4",
+    version="0.5",
     packages=find_packages(where='.'),
     package_data={
         'ponyexpress': [
