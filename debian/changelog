@@ -1,3 +1,11 @@
+ponyexpress (0.5.3-1) precise; urgency=low
+
+  * [ Christoph Kassen ]
+    Fix sqlite configuration path
+    Update dependencies
+
+ -- Christoph Kassen <c.kassen@telekom.de>  Wed, 14 Feb 2014 11:52:43 +0100
+
 ponyexpress (0.5.2-1) precise; urgency=low
 
   * [ Christoph Kassen ]
