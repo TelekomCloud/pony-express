@@ -18,7 +18,7 @@ Architecture: all
 Depends:
  ${misc:Depends},
  ${python:Depends},
- python-sqlite,
+ python-pysqlite2,
  python-flask,
  python-flask-migrate,
  python-flask-script,
