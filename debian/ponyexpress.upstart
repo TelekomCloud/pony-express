@@ -1,0 +1,11 @@
+description "Ponyexpress service"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+
+setuid ponyexpress
+setgid ponyexpress
+
+exec start-stop-daemon --start --chuid ponyexpress --exec /usr/bin/ponyexpress -- runserver -d -r -t 0.0.0.0 -p 5555
