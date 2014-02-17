@@ -1,3 +1,10 @@
+ponyexpress (0.5.4-1) precise; urgency=low
+
+  * [ Christoph Kassen ]
+    Add upstart job for ponyexpress into the package.
+
+ -- Christoph Kassen <c.kassen@telekom.de>  Wed, 17 Feb 2014 14:28:12 +0100
+
 ponyexpress (0.5.3-1) precise; urgency=low
 
   * [ Christoph Kassen ]
