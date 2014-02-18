@@ -102,7 +102,7 @@ def packages():
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
-    if paginator.items:
+    if paginator:
         for p in paginator.items:
             l = len(result)
             index = ((l - 1), 0)[0 > (l - 1)]
