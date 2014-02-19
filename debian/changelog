@@ -1,3 +1,10 @@
+ponyexpress (0.5.5-1) precise; urgency=low
+
+  * [ Christoph Kassen ]
+    Include API bugfixes
+
+ -- Christoph Kassen <c.kassen@telekom.de>  Wed, 19 Feb 2014 10:13:24 +0100
+
 ponyexpress (0.5.4-1) precise; urgency=low
 
   * [ Christoph Kassen ]
