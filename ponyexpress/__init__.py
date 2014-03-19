@@ -1,8 +1,9 @@
 from flask import Flask, jsonify
 
 from ponyexpress.api.exceptions import *
+
 #Required import
-from ponyexpress.config.configuration import *
+#from ponyexpress.config.configuration import *
 
 
 def create_app(environment='ponyexpress.config.configuration.ProductionConfig'):

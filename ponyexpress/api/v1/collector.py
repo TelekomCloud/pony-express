@@ -1,7 +1,7 @@
 from flask import Blueprint, request, Response
 from ponyexpress.api.exceptions import *
 
-from ponyexpress.api.lib import *
+from ponyexpress.api.lib.package_import import PackageImport
 
 collector = Blueprint('collector', __name__)
 
@@ -20,7 +20,8 @@ def dataimport():
 
         request_json = request.get_json()
 
-        process_node_info(request_json)
+        importer = PackageImport()
+        importer.process_node_info(request_json)
 
         #TODO: return node object?
         return Response(status=200)

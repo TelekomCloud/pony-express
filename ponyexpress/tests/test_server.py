@@ -2,8 +2,9 @@
 
 import unittest
 import json
-from ponyexpress import *
-from ponyexpress.api.lib import *
+from ponyexpress import create_app
+from ponyexpress.database import db
+from ponyexpress.api.lib.package_import import PackageImport
 
 #=================================
 # TODO, we will stub this for now
@@ -119,7 +120,8 @@ class TestServerBase(unittest.TestCase):
 
         #process_node_info(self.DATA3)
 
-        process_node_info(node_dict)
+        test_import = PackageImport()
+        test_import.process_node_info(node_dict)
 
     def process_data(self, filename):
         json_data = open(filename)
