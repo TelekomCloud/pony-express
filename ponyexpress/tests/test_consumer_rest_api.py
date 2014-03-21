@@ -9,10 +9,10 @@ class BasicTestCaseV1(TestServerBase):
     def content_type_must_eq(self, response, t):
         self.assertEqual(response.headers['Content-Type'], t)
 
-    def get_json(self, path):
+    def get_json(self, path, response_type = 200):
         r = self.client.get(path)
         self.content_type_must_eq(r, 'application/json')
-        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.status_code, response_type)
         return json.loads(r.data.decode("utf-8"))
 
     def testRequestNodesEmpty(self):
