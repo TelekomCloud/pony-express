@@ -83,7 +83,7 @@ class TestServerBase(unittest.TestCase):
     }
 
     MIRROR1 = {
-        "id": "5abe7af3-97f5-4a30-8fc9-088da83baa4d",
+        "id": 1,
         "label": "live",
         "url": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz"
     }
