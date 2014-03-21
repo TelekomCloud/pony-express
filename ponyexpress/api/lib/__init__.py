@@ -41,7 +41,8 @@ def process_node_info(request_json):
                     create_package(node, package)
                 else:
                     if 'name' in package.keys() and 'version' in package.keys():
-                        sha = hashlib.sha256(package['name'] + package['version'])
+                        hash_contents = ( package['name'] + package['version'] ).encode('utf-8')
+                        sha = hashlib.sha256(hash_contents)
                         package['sha256'] = sha.hexdigest()
                         create_package(node, package)
     else:

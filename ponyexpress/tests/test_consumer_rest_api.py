@@ -13,7 +13,7 @@ class BasicTestCaseV1(TestServerBase):
         r = self.client.get(path)
         self.content_type_must_eq(r, 'application/json')
         self.assertEqual(r.status_code, 200)
-        return json.loads(r.data)
+        return json.loads(r.data.decode("utf-8"))
 
     def testRequestNodesEmpty(self):
         j = self.get_json('/v1/nodes')
