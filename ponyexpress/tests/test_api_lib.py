@@ -169,7 +169,7 @@ class TestAPILibrary(TestServerBase):
 
         assert Node.query.count() == 1
         # Not ideal, but the easiest way
-        print Package.query.count()
+        print(Package.query.count())
         assert Package.query.count() == 559
 
         # Must update this sha if you change install.txt and or upgrade.txt
