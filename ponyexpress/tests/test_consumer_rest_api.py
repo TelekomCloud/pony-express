@@ -1,4 +1,5 @@
 import json
+import uuid
 from nose.tools import *
 
 from .test_server import *
@@ -9,11 +10,24 @@ class BasicTestCaseV1(TestServerBase):
     def content_type_must_eq(self, response, t):
         self.assertEqual(response.headers['Content-Type'], t)
 
-    def get_json(self, path, response_type = 200):
-        r = self.client.get(path)
+    def request_json(self, path, method = "get", status_code = 200, data = None ):
+        # get the request method (get/post/put...) from the method string
+        req = getattr(self.client, method)
+        # before sending the request, determine if you add data to it
+        data_methods = ["post", "put", "patch"]
+        if method in data_methods:
+            r = req(path, data=data)
+        else:
+            r = req(path)
+        # assert the response code
+        self.assertEqual(r.status_code, status_code)
+        # assert the response type
         self.content_type_must_eq(r, 'application/json')
-        self.assertEqual(r.status_code, response_type)
+        # return the json response
         return json.loads(r.data.decode("utf-8"))
+
+    def get_json(self, path):
+        return self.request_json(path, "get", 200)
 
     def testRequestNodesEmpty(self):
         j = self.get_json('/v1/nodes')
@@ -76,11 +90,19 @@ class BasicTestCaseV1(TestServerBase):
         eq_(type(j['nodes'][0]), dict)
         eq_(j['nodes'][0]['id'], 'node2')
 
-    def testRequestMirrorsEmpty(self):
+    def testCreateMirror(self):
+        m = self.MIRROR1
+        j = self.request_json('/v1/mirrors', 'post', data = m, status_code = 201)
+
+        eq_(j["id"], m["id"])
+        eq_(j["url"], m["url"])
+        eq_(j["label"], m["label"])
+
+    def testReadMirrorsEmpty(self):
         j = self.get_json('/v1/mirrors')
         eq_(type(j), list)
 
-    def testRequestMirrors(self):
+    def testReadMirrors(self):
         self.addMirror(self.MIRROR1)
         m = self.MIRROR1
         j = self.get_json('/v1/mirrors')
