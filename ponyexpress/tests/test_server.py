@@ -115,11 +115,6 @@ class TestServerBase(unittest.TestCase):
     def addNode(self, node_dict):
         """A method to add nodes for test purposes"""
 
-        # Add some sample data
-        #process_node_info(self.DATA1)
-
-        #process_node_info(self.DATA3)
-
         test_import = PackageImport()
         test_import.process_node_info(node_dict)
 
