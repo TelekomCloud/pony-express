@@ -82,6 +82,12 @@ class TestServerBase(unittest.TestCase):
         ]
     }
 
+    MIRROR1 = {
+        "id": "5abe7af3-97f5-4a30-8fc9-088da83baa4d",
+        "label": "live",
+        "url": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz"
+    }
+
     def setUp(self):
         """
         Set test environment and load test config
@@ -117,6 +123,12 @@ class TestServerBase(unittest.TestCase):
 
         test_import = PackageImport()
         test_import.process_node_info(node_dict)
+
+    def addMirror(self, mirror_dict):
+        """A method to add mirrors for test purposes"""
+
+        # TBD
+        pass
 
     def process_data(self, filename):
         json_data = open(filename)

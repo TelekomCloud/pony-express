@@ -75,3 +75,18 @@ class BasicTestCaseV1(TestServerBase):
         eq_(len(j['nodes']), 1)
         eq_(type(j['nodes'][0]), dict)
         eq_(j['nodes'][0]['id'], 'node2')
+
+    def testRequestMirrorsEmpty(self):
+        j = self.get_json('/v1/mirrors')
+        eq_(type(j), list)
+
+    def testRequestMirrors(self):
+        self.addMirror(self.MIRROR1)
+        m = self.MIRROR1
+        j = self.get_json('/v1/mirrors')
+        eq_(type(j), list)
+        eq_(len(j), 1)
+
+        eq_(j[0]["id"], m["id"])
+        eq_(j[0]["url"], m["url"])
+        eq_(j[0]["label"], m["label"])
