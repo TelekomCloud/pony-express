@@ -112,3 +112,33 @@ class BasicTestCaseV1(TestServerBase):
         eq_(j[0]["id"], m["id"])
         eq_(j[0]["url"], m["url"])
         eq_(j[0]["label"], m["label"])
+
+    def testUpdateMirror(self):
+        self.addMirror(self.MIRROR1)
+        m = self.MIRROR1
+        # create a new random label
+        label = str(uuid.uuid4())
+        update_data = {
+            "id" : m["id"],
+            "label" : label
+        }
+        # send the request to update this mirror with the new data
+        j = self.request_json('/v1/mirrors', 'patch', data = update_data, status_code = 200)
+
+        # check if the response of this update has the new data
+        eq_(j["id"], m["id"])
+        eq_(j["label"], label)
+
+        # check if the get requests also have the update
+        j = self.get_json('/v1/mirrors')
+        eq_(type(j), list)
+        eq_(len(j), 1)
+        eq_(j[0]["id"], m["id"])
+        eq_(j[0]["url"], m["url"])
+        eq_(j[0]["label"], label)
+
+    def testDeleteMirror(self):
+        self.addMirror(self.MIRROR1)
+        m = self.MIRROR1
+        # send the request to remove this mirror
+        j = self.request_json('/v1/mirror/'+m["id"], 'delete', status_code = 204)
