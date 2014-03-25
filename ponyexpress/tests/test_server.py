@@ -84,8 +84,10 @@ class TestServerBase(unittest.TestCase):
 
     MIRROR1 = {
         "id": 1,
+        "name": "Magus Mirror",
         "label": "live",
-        "url": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz"
+        "url": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz",
+        "provider": "apt"
     }
 
     def setUp(self):

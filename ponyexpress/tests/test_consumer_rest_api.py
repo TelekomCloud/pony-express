@@ -110,8 +110,10 @@ class BasicTestCaseV1(TestServerBase):
         eq_(len(j), 1)
 
         eq_(j[0]["id"], m["id"])
+        eq_(j[0]["name"], m["name"])
         eq_(j[0]["url"], m["url"])
         eq_(j[0]["label"], m["label"])
+        eq_(j[0]["provider"], m["provider"])
 
     def testUpdateMirror(self):
         self.addMirror(self.MIRROR1)
@@ -134,8 +136,10 @@ class BasicTestCaseV1(TestServerBase):
         eq_(type(j), list)
         eq_(len(j), 1)
         eq_(j[0]["id"], m["id"])
+        eq_(j[0]["name"], m["name"])
         eq_(j[0]["url"], m["url"])
         eq_(j[0]["label"], label)
+        eq_(j[0]["provider"], m["provider"])
 
     def testDeleteMirror(self):
         self.addMirror(self.MIRROR1)
