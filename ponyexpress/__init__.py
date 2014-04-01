@@ -2,18 +2,15 @@ from flask import Flask, jsonify
 
 from ponyexpress.api.exceptions import *
 
-#Required import
-#from ponyexpress.config.configuration import *
 
-
-def create_app(environment='ponyexpress.config.configuration.ProductionConfig'):
+def create_app(environment='ponyexpress.config.configuration.DevelopmentConfig'):
     app = Flask(__name__)
 
     # Load configuration
     #TODO: load configuration depending on environment
     app.config.from_object(environment)
-    app.config.from_pyfile('/etc/pony-express/ponyexpress.cfg', True)
-    app.config.from_envvar('PONYEXPRES_CFG', True)
+    #app.config.from_pyfile('/etc/pony-express/ponyexpress.cfg', True)
+    #app.config.from_envvar('PONYEXPRES_CFG', True)
 
     # Database
     from ponyexpress.database import db

@@ -9,8 +9,7 @@ class TestAptMirror(unittest.TestCase):
         """
         Set test environment and load test config
         """
-        self.aptmirror = AptMirror()
-        self.aptmirror.set_url('http://us.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz')
+        self.aptmirror = AptMirror('http://us.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz')
 
     def test_fetch_metadata(self):
         """Test package list downloading"""

@@ -93,22 +93,28 @@ def node(fqdn):
 def packages():
     result = []
 
+    paginator = None
+
     limit = int(request.args.get('limit', 100))
     page = int(request.args.get('page', 1))
 
-    filter = str(request.args.get('filter', None))
+    filter = str(request.args.get('filter', ''))
 
-    outdated = str(request.args.get('outdated', None))
-    mirror = str(request.args.get('mirror', None))
+    outdated = str(request.args.get('outdated', ''))
+    mirror = str(request.args.get('mirror', ''))
 
-    if outdated is None:
+    if outdated == '':
         if (10 <= limit <= 100) and page >= 1:
 
             if filter is not None:
                 filter_string = ('%%%s%%' % filter)
-            paginator = Package.query.filter(Node.name.like(filter_string)).order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
+                paginator = Package.query.filter(Node.name.like(filter_string)).order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
                                                                                             error_out=False)
-    elif outdated is not None and mirror is not None:
+            else:
+                paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
+                                                                                            error_out=False)
+    elif outdated != '' and mirror != '':
+        # create paginator
         pass
     else:
         raise InvalidAPIUsage('Invalid request', 410)
