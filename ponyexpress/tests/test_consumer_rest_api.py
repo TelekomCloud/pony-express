@@ -121,11 +121,10 @@ class BasicTestCaseV1(TestServerBase):
         # create a new random label
         label = str(uuid.uuid4())
         update_data = {
-            "id" : m["id"],
             "label" : label
         }
         # send the request to update this mirror with the new data
-        j = self.request_json('/v1/mirrors', 'patch', data = update_data, status_code = 200)
+        j = self.request_json('/v1/mirrors/'+m['id'], 'patch', data = update_data, status_code = 200)
 
         # check if the response of this update has the new data
         eq_(j["id"], m["id"])
