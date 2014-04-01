@@ -96,9 +96,20 @@ def packages():
     limit = int(request.args.get('limit', 100))
     page = int(request.args.get('page', 1))
 
-    if (10 <= limit <= 100) and page >= 1:
-        paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
+    filter = str(request.args.get('filter', None))
+
+    outdated = str(request.args.get('outdated', None))
+    mirror = str(request.args.get('mirror', None))
+
+    if outdated is None:
+        if (10 <= limit <= 100) and page >= 1:
+
+            if filter is not None:
+                filter_string = ('%%%s%%' % filter)
+            paginator = Package.query.filter(Node.name.like(filter_string)).order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
                                                                                             error_out=False)
+    elif outdated is not None and mirror is not None:
+        pass
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
@@ -131,7 +142,6 @@ def packages():
         return Response(json.dumps(result), mimetype='application/json', headers=headers)
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
-
 
 @query.route('/v1/package/<id>', methods=['GET'])
 def package(id):

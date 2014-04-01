@@ -10,10 +10,10 @@ class PackageHistory(db.Model):
     nodename = db.Column(db.String(255))
 
     #package
-    pkgsha = db.Column(db.String(64))
+    pkgsha = db.Column(db.String(255))
     pkgname = db.Column(db.String(255))
     pkgversion = db.Column(db.String(64))
-    pkgsource = db.Column(db.TEXT)
+    pkgsource = db.Column(db.Text)
 
     # date installed
     installed = db.Column(db.DATE)
