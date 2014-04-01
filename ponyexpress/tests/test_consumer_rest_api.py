@@ -144,4 +144,4 @@ class BasicTestCaseV1(TestServerBase):
         self.addMirror(self.MIRROR1)
         m = self.MIRROR1
         # send the request to remove this mirror
-        j = self.request_json('/v1/mirror/'+m["id"], 'delete', status_code = 204)
+        j = self.request_json('/v1/mirrors/'+m["id"], 'delete', status_code = 204)
