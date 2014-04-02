@@ -1,6 +1,7 @@
 from flask import Blueprint, request, Response, json
 from ponyexpress.models.package import Package
 from ponyexpress.models.node import Node
+from ponyexpress.models.mirror import Mirror
 from ponyexpress.api.exceptions import *
 
 query = Blueprint('query', __name__)
@@ -167,3 +168,33 @@ def package(id):
         return Response(json.dumps(result), mimetype='application/json')
     else:
         raise InvalidAPIUsage('Package not found', 404)
+
+@query.route('/v1/mirrors', methods=['GET'])
+def mirrors():
+    result = []
+
+    limit = int(request.args.get('limit', 100))
+    page  = int(request.args.get('page',  1))
+
+    if (10 <= limit <= 100) and page >= 1:
+        #queried_nodes = Node.query.limit(limit).offset(offset)
+        paginator = Mirror.query.paginate(page=page, per_page=limit, error_out=False)
+    else:
+        raise InvalidAPIUsage('Invalid request', 410)
+
+    if paginator:
+        for n in paginator.items:
+            c = {
+                'id'       : n.id,
+                'name'     : n.name,
+                'uri'      : n.uri,
+                'label'    : n.label,
+                'provider' : n.provider
+            }
+            result.append(c)
+
+        headers = hypermedia_headers(request.base_url, page, paginator)
+
+        return Response(json.dumps(result), mimetype='application/json', headers=headers)
+    else:
+        raise InvalidAPIUsage('Invalid request', 410)
