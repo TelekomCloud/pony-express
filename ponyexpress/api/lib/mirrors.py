@@ -116,19 +116,18 @@ class Mirrors:
                             # mirror is newer
                             pkg = {'pkg': package, 'version': package.pkgversion, 'upstream': mp.pkgversion}
                             outdated_packages.append(pkg)
-                            # elif res == 0:
-                            #     # versions match
-                            #     pass
-                            # elif res > 0:
-                            #     # local is newer than mirror
-                            #     pass
+                        # elif res == 0:
+                        #     # versions match
+                        #     pass
+                        # elif res > 0:
+                        #     # local is newer than mirror
+                        #     pass
                 except:
                     # Catch exceptions and move on to the next object
-                    continue
+                    next()
 
             return outdated_packages
         else:
-            #
             return []
 
     def _ver_tuple(self, z):
@@ -157,4 +156,10 @@ class Mirrors:
         if len(va) != len(vb):
             return -1
 
-        return cmp(va, vb)
+        #return va < vb
+        if va < vb:
+            return -1
+        elif va == vb:
+            return 0
+        elif va > vb:
+            return 1
