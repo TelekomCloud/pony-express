@@ -4,6 +4,7 @@ import re
 
 from ponyexpress.database import db
 from ponyexpress.api.lib.providers import *
+from ponyexpress.models.mirror import Mirror
 from ponyexpress.models.mirror_history import MirrorHistory
 from ponyexpress.models.package_history import PackageHistory
 
@@ -15,6 +16,24 @@ class Mirrors:
 
     def __init__(self):
         pass
+
+    def create_mirror(self, mirrordata):
+        # name, uri, label, provider   +   id
+
+        # skip checking for the existance of an mirror
+        # could be done via URI only at this step
+
+        new_mirror          = Mirror()
+        new_mirror.name     = mirrordata['name']
+        new_mirror.label    = mirrordata['label']
+        new_mirror.uri      = mirrordata['uri']
+        new_mirror.provider = mirrordata['provider']
+
+        db.session.add(new_mirror)
+        db.session.commit()
+
+        # return the new object's id
+        return new_mirror.id
 
     def update_mirror(self, mirror):
 
