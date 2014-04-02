@@ -199,7 +199,7 @@ class TestAPILibrary(TestServerBase):
         test_importer.process_node_info(data_update)
 
         assert Node.query.count() == 1
-        print PackageHistory.query.count()
+        print(PackageHistory.query.count())
         assert Package.query.count() == 579
 
 
