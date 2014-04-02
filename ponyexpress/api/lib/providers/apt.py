@@ -49,6 +49,7 @@ class AptMirror(Provider):
         # read until we find an empty line
         package_metadata = {}
         for line in filehandle:
+            line = line.decode('utf-8')
             if line == "\n" or line == "\r\n":
                 key = package_metadata.get('sha256')
                 if key is not None:
