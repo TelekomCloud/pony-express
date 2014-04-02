@@ -101,8 +101,8 @@ class Mirrors:
 
         if packages_history is not None:
 
-            try:
-                for package in packages_history:
+            for package in packages_history:
+                try:
                     # get packages from selected set of mirrors, filter by label
                     mp = MirrorHistory.query.filter(MirrorHistory.pkgname == package.pkgname,
                                                     MirrorHistory.mirror_id == mirror.id). \
@@ -122,9 +122,9 @@ class Mirrors:
                             # elif res > 0:
                             #     # local is newer than mirror
                             #     pass
-            except:
-                # Catch exceptions and move on to the next object
-                next()
+                except:
+                    # Catch exceptions and move on to the next object
+                    continue
 
             return outdated_packages
         else:
