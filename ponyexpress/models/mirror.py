@@ -14,8 +14,8 @@ class Mirror(db.Model):
 
     provider = db.Column(db.String(12))
 
-    def __init__(self, name=None):
-        self.name = name
+    def __init__(self):
+        pass
 
     def __repr__(self):
         return '<Node %r>' % self.name
