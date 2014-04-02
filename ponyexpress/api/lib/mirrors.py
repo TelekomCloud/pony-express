@@ -28,7 +28,12 @@ class Mirrors:
 
         if metadata is not None:
 
-            for m in metadata.itervalues():
+            try:
+                mvals = metadata.itervalues()
+            except:
+                mvals = metadata.values()
+
+            for m in mvals:
                 hist = MirrorHistory(mirror, m['sha256'], m['package'], m['version'], m['filename'], date.today())
 
                 db.session.add(hist)
