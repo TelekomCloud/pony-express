@@ -95,7 +95,7 @@ class BasicTestCaseV1(TestServerBase):
         j = self.request_json('/v1/mirrors', 'post', data = m, status_code = 201)
 
         neq_(j["id"], None)
-        eq_(j["url"], m["url"])
+        eq_(j["uri"], m["uri"])
         eq_(j["label"], m["label"])
 
     def testReadMirrorsEmpty(self):
@@ -111,7 +111,7 @@ class BasicTestCaseV1(TestServerBase):
 
         eq_(j[0]["id"], id)
         eq_(j[0]["name"], m["name"])
-        eq_(j[0]["url"], m["url"])
+        eq_(j[0]["uri"], m["uri"])
         eq_(j[0]["label"], m["label"])
         eq_(j[0]["provider"], m["provider"])
 
@@ -136,7 +136,7 @@ class BasicTestCaseV1(TestServerBase):
         eq_(len(j), 1)
         eq_(j[0]["id"], id)
         eq_(j[0]["name"], m["name"])
-        eq_(j[0]["url"], m["url"])
+        eq_(j[0]["uri"], m["uri"])
         eq_(j[0]["label"], label)
         eq_(j[0]["provider"], m["provider"])
 

@@ -86,7 +86,7 @@ class TestServerBase(unittest.TestCase):
     MIRROR1 = {
         "name": "Magus Mirror",
         "label": "live",
-        "url": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz",
+        "uri": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz",
         "provider": "apt"
     }
 
