@@ -1,9 +1,11 @@
+import os.path
+
 from .test_server import *
 
-from ponyexpress.api.lib import *
-
+from ponyexpress.api.lib.package_import import PackageImport
 from ponyexpress.models.node import Node
 from ponyexpress.models.package import Package
+from ponyexpress.models.package_history import PackageHistory
 
 # Test case demo data
 DATA_UPDATE1 = {
@@ -56,7 +58,8 @@ class TestAPILibrary(TestServerBase):
     def test_node_import_empty(self):
         """Test importing a new node"""
 
-        process_node_info(TestServerBase.DATA_E)
+        test_importer = PackageImport()
+        test_importer.process_node_info(TestServerBase.DATA_E)
 
         assert Node.query.count() == 1
         assert Package.query.count() == 0
@@ -64,7 +67,8 @@ class TestAPILibrary(TestServerBase):
     def test_node_import_new(self):
         """Test importing a new node"""
 
-        process_node_info(TestServerBase.DATA1)
+        test_importer = PackageImport()
+        test_importer.process_node_info(TestServerBase.DATA1)
 
         assert Node.query.count() == 1
         assert Package.query.count() == 1
@@ -72,7 +76,8 @@ class TestAPILibrary(TestServerBase):
     def test_node_import_update(self):
         """Test importing a node which exists in the db"""
 
-        process_node_info(TestServerBase.DATA1)
+        test_importer = PackageImport()
+        test_importer.process_node_info(TestServerBase.DATA1)
 
         assert Node.query.count() == 1
         assert Package.query.count() == 1
@@ -82,7 +87,7 @@ class TestAPILibrary(TestServerBase):
         assert node.packages.count() == 1
 
         # Reimport data to simulate subsequent updates
-        process_node_info(TestServerBase.DATA1)
+        test_importer.process_node_info(TestServerBase.DATA1)
 
         assert Node.query.count() == 1
         assert Package.query.count() == 1
@@ -94,7 +99,8 @@ class TestAPILibrary(TestServerBase):
     def test_node_import_2nodes(self):
         """Test importing a node which exists in the db"""
 
-        process_node_info(TestServerBase.DATA1)
+        test_importer = PackageImport()
+        test_importer.process_node_info(TestServerBase.DATA1)
 
         assert Node.query.count() == 1
         assert Package.query.count() == 1
@@ -104,7 +110,7 @@ class TestAPILibrary(TestServerBase):
         assert node.packages.count() == 1
 
         # Reimport data to simulate subsequent updates
-        process_node_info(TestServerBase.DATA2)
+        test_importer.process_node_info(TestServerBase.DATA2)
 
         assert Node.query.count() == 2
         assert Package.query.count() == 2
@@ -116,15 +122,16 @@ class TestAPILibrary(TestServerBase):
     def test_node_import_package_update(self):
         """Test importing a node which exists in the db"""
 
-        process_node_info(DATA_UPDATE1)
+        test_importer = PackageImport()
+        test_importer.process_node_info(DATA_UPDATE1)
 
         # Reimport data to simulate subsequent updates
-        process_node_info(DATA_UPDATE1)
+        test_importer.process_node_info(DATA_UPDATE1)
 
         assert Node.query.count() == 1
         assert Package.query.count() == 1
 
-        process_node_info(DATA_UPDATE2)
+        test_importer.process_node_info(DATA_UPDATE2)
 
         nodes = Node.query.all()
         assert len(nodes) == 2
@@ -158,18 +165,19 @@ class TestAPILibrary(TestServerBase):
         path = os.path.dirname(__file__)
         datafile = os.path.join(path, 'data/install.txt')
         data_install = self.process_data(datafile)
-        process_node_info(data_install)
+
+        test_importer = PackageImport()
+        test_importer.process_node_info(data_install)
 
         assert Node.query.count() == 1
         assert Package.query.count() == len(data_install['packages'])
 
         datafile = os.path.join(path, 'data/upgrade.txt')
         data_update = self.process_data(datafile)
-        process_node_info(data_update)
+        test_importer.process_node_info(data_update)
 
         assert Node.query.count() == 1
         # Not ideal, but the easiest way
-        print(Package.query.count())
         assert Package.query.count() == 559
 
         # Must update this sha if you change install.txt and or upgrade.txt
@@ -184,6 +192,16 @@ class TestAPILibrary(TestServerBase):
 
         np = Node.query.filter(Node.packages.any(name='grub-common')).all()
         assert len(np) == 1
+
+        # run another upgrade
+        datafile = os.path.join(path, 'data/upgrade2.txt')
+        data_update = self.process_data(datafile)
+        test_importer.process_node_info(data_update)
+
+        assert Node.query.count() == 1
+        print(PackageHistory.query.count())
+        assert Package.query.count() == 579
+
 
 
 if __name__ == '__main__':

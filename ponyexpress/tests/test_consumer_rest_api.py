@@ -48,24 +48,9 @@ class BasicTestCaseV1(TestServerBase):
         self.addNode(self.DATA2)
         self.addNode(self.DATA3)
         p = self.DATA2['packages'][0]
-        j = self.get_json('/v1/packages')
+        j = self.get_json('/v1/packages?filter=node2')
         eq_(type(j), list)
         #eq_(len(j), 2)
-
-        """
-        [
-            {
-                "name": "<package>",
-                "versions": [
-                    {
-                        "version": "1.0",
-                        "id": "<id>"
-                    }
-                ],
-                "summary": ""
-            }
-        ]
-        """
 
         eq_(j[0]["name"], p["name"])
         eq_(type(j[0]["versions"]), list)
