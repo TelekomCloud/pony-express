@@ -94,7 +94,7 @@ class BasicTestCaseV1(TestServerBase):
         m = self.MIRROR1
         j = self.request_json('/v1/mirrors', 'post', data = m, status_code = 201)
 
-        eq_(j["id"], m["id"])
+        neq_(j["id"], None)
         eq_(j["url"], m["url"])
         eq_(j["label"], m["label"])
 
@@ -103,20 +103,20 @@ class BasicTestCaseV1(TestServerBase):
         eq_(type(j), list)
 
     def testReadMirrors(self):
-        self.addMirror(self.MIRROR1)
+        id = self.addMirror(self.MIRROR1)
         m = self.MIRROR1
         j = self.get_json('/v1/mirrors')
         eq_(type(j), list)
         eq_(len(j), 1)
 
-        eq_(j[0]["id"], m["id"])
+        eq_(j[0]["id"], id)
         eq_(j[0]["name"], m["name"])
         eq_(j[0]["url"], m["url"])
         eq_(j[0]["label"], m["label"])
         eq_(j[0]["provider"], m["provider"])
 
     def testUpdateMirror(self):
-        self.addMirror(self.MIRROR1)
+        id = self.addMirror(self.MIRROR1)
         m = self.MIRROR1
         # create a new random label
         label = str(uuid.uuid4())
@@ -124,24 +124,23 @@ class BasicTestCaseV1(TestServerBase):
             "label" : label
         }
         # send the request to update this mirror with the new data
-        j = self.request_json('/v1/mirrors/'+m['id'], 'patch', data = update_data, status_code = 200)
+        j = self.request_json('/v1/mirrors/'+str(id), 'patch', data = update_data, status_code = 200)
 
         # check if the response of this update has the new data
-        eq_(j["id"], m["id"])
+        eq_(j["id"], id)
         eq_(j["label"], label)
 
         # check if the get requests also have the update
         j = self.get_json('/v1/mirrors')
         eq_(type(j), list)
         eq_(len(j), 1)
-        eq_(j[0]["id"], m["id"])
+        eq_(j[0]["id"], id)
         eq_(j[0]["name"], m["name"])
         eq_(j[0]["url"], m["url"])
         eq_(j[0]["label"], label)
         eq_(j[0]["provider"], m["provider"])
 
     def testDeleteMirror(self):
-        self.addMirror(self.MIRROR1)
-        m = self.MIRROR1
+        id = self.addMirror(self.MIRROR1)
         # send the request to remove this mirror
-        j = self.request_json('/v1/mirrors/'+m["id"], 'delete', status_code = 204)
+        j = self.request_json('/v1/mirrors/'+str(id), 'delete', status_code = 204)
