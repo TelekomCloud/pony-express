@@ -58,7 +58,8 @@ class PackageImport:
                         self.create_package(node, package)
                     else:
                         if 'name' in package.keys() and 'version' in package.keys():
-                            sha = hashlib.sha256(package['name'] + package['version'])
+                            hash_contents = ( package['name'] + package['version'] ).encode('utf-8')
+                            sha = hashlib.sha256(hash_contents)
                             package['sha256'] = sha.hexdigest()
                             self.create_package(node, package)
         else:
