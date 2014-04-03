@@ -5,6 +5,7 @@ import json
 from ponyexpress import create_app
 from ponyexpress.database import db
 from ponyexpress.api.lib.package_import import PackageImport
+from ponyexpress.api.lib.mirrors import Mirrors
 
 #=================================
 # TODO, we will stub this for now
@@ -82,6 +83,13 @@ class TestServerBase(unittest.TestCase):
         ]
     }
 
+    MIRROR1 = {
+        "name": "Magus Mirror",
+        "label": "live",
+        "uri": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz",
+        "provider": "apt"
+    }
+
     def setUp(self):
         """
         Set test environment and load test config
@@ -115,13 +123,14 @@ class TestServerBase(unittest.TestCase):
     def addNode(self, node_dict):
         """A method to add nodes for test purposes"""
 
-        # Add some sample data
-        #process_node_info(self.DATA1)
-
-        #process_node_info(self.DATA3)
-
         test_import = PackageImport()
         test_import.process_node_info(node_dict)
+
+    def addMirror(self, mirror_dict):
+        """A method to add mirrors for test purposes"""
+
+        handler = Mirrors()
+        return handler.create_mirror( mirror_dict )
 
     def process_data(self, filename):
         json_data = open(filename)

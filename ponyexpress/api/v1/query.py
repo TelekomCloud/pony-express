@@ -1,7 +1,9 @@
 from flask import Blueprint, request, Response, json
 from ponyexpress.models.package import Package
 from ponyexpress.models.node import Node
+from ponyexpress.models.mirror import Mirror
 from ponyexpress.api.exceptions import *
+from ponyexpress.api.lib.mirrors import Mirrors
 
 query = Blueprint('query', __name__)
 
@@ -165,5 +167,114 @@ def package(id):
             result['nodes'].append({'id': n.name})
 
         return Response(json.dumps(result), mimetype='application/json')
+    else:
+        raise InvalidAPIUsage('Package not found', 404)
+
+@query.route('/v1/mirrors', methods=['GET','POST'])
+def mirrors():
+    if request.method == 'GET':
+        return mirrors_get()
+    elif request.method == 'POST':
+        return mirrors_post()
+
+def mirrors_get():
+    result = []
+
+    limit = int(request.args.get('limit', 100))
+    page  = int(request.args.get('page',  1))
+
+    if (10 <= limit <= 100) and page >= 1:
+        #queried_nodes = Node.query.limit(limit).offset(offset)
+        paginator = Mirror.query.paginate(page=page, per_page=limit, error_out=False)
+    else:
+        raise InvalidAPIUsage('Invalid request', 410)
+
+    if paginator:
+        for n in paginator.items:
+            c = {
+                'id'       : n.id,
+                'name'     : n.name,
+                'uri'      : n.uri,
+                'label'    : n.label,
+                'provider' : n.provider
+            }
+            result.append(c)
+
+        headers = hypermedia_headers(request.base_url, page, paginator)
+
+        return Response(json.dumps(result), mimetype='application/json', headers=headers)
+    else:
+        raise InvalidAPIUsage('Invalid request', 410)
+
+def mirrors_post():
+    handler = Mirrors()
+
+    # validation
+    j = request.get_json()
+    if j['uri'] is None:
+        raise InvalidAPIUsage('You must provide a URI when creating a new mirror.', 404)
+
+    # fill data with all the fields necessary for creating a mirror entry
+    data = {}
+    data['name']     = str( j['name'] )
+    data['label']    = str( j['label'] )
+    data['uri']      = str( j['uri'] )
+    data['provider'] = str( j['provider'] )
+
+    # create new new mirror
+    try:
+        id = handler.create_mirror(data)
+
+        # add the newly created id to the data to be returned
+        data['id'] = id
+
+        # return the object
+        return Response(json.dumps(data), status=201, mimetype='application/json')
+    except:
+        raise InvalidAPIUsage('Failed to create new mirror', 404)
+
+
+@query.route('/v1/mirrors/<id>', methods=['PATCH', 'DELETE'])
+def mirror_by_id(id):
+    if request.method == 'PATCH':
+        return mirror_update(id)
+    elif request.method == 'DELETE':
+        return mirror_delete(id)
+
+def mirror_update(id):
+    if id != '':
+        mirror = Mirror.query.filter_by(id=id).first()
+    else:
+        raise InvalidAPIUsage('Invalid API usage', 410)
+
+    if mirror:
+        # update all known fields
+        mirrordata = request.get_json()
+        handler = Mirrors()
+        handler.update_mirror_info(mirror, mirrordata)
+
+        # extract the result for the response
+        result = {'id': mirror.id, 'name': mirror.name, 'uri': mirror.uri, 'label': mirror.label,
+                  'provider': mirror.provider
+                  }
+
+        return Response(json.dumps(result), mimetype='application/json')
+    else:
+        raise InvalidAPIUsage('Package not found', 404)
+
+def mirror_delete(id):
+    if id != '':
+        mirror = Mirror.query.filter_by(id=id).first()
+    else:
+        raise InvalidAPIUsage('Invalid API usage', 410)
+
+    if mirror:
+        id = mirror.id
+        # remove the mirror
+        handler = Mirrors()
+        handler.delete_mirror(mirror)
+
+        # return
+        return Response('', status=204, mimetype='application/json')
     else:
         raise InvalidAPIUsage('Package not found', 404)
