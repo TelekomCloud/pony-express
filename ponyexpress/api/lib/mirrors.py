@@ -49,6 +49,11 @@ class Mirrors:
         # update the database
         db.session.commit()
 
+    def delete_mirror(self, mirror):
+        # remove the entry
+        db.session.delete(mirror)
+        db.session.commit()
+
     def update_mirror(self, mirror):
 
         # TODO: replace with better class selection
