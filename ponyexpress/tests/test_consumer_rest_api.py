@@ -25,7 +25,9 @@ class BasicTestCaseV1(TestServerBase):
         # assert the response type
         self.content_type_must_eq(r, 'application/json')
         # return the json response
-        return json.loads(r.data.decode("utf-8"))
+        data = r.data.decode("utf-8")
+        ret = json.loads(data) if len(data) > 0 else ''
+        return ret
 
     def get_json(self, path):
         return self.request_json(path, "get", 200)
