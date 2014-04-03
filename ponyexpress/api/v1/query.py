@@ -263,4 +263,18 @@ def mirror_update(id):
         raise InvalidAPIUsage('Package not found', 404)
 
 def mirror_delete(id):
-    pass
+    if id != '':
+        mirror = Mirror.query.filter_by(id=id).first()
+    else:
+        raise InvalidAPIUsage('Invalid API usage', 410)
+
+    if mirror:
+        id = mirror.id
+        # remove the mirror
+        handler = Mirrors()
+        handler.delete_mirror(mirror)
+
+        # return
+        return Response('', status=204, mimetype='application/json')
+    else:
+        raise InvalidAPIUsage('Package not found', 404)
