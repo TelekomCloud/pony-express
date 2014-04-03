@@ -3,6 +3,7 @@ from ponyexpress.models.package import Package
 from ponyexpress.models.node import Node
 from ponyexpress.models.mirror import Mirror
 from ponyexpress.api.exceptions import *
+from ponyexpress.api.lib.mirrors import Mirrors
 
 query = Blueprint('query', __name__)
 
@@ -169,8 +170,14 @@ def package(id):
     else:
         raise InvalidAPIUsage('Package not found', 404)
 
-@query.route('/v1/mirrors', methods=['GET'])
+@query.route('/v1/mirrors', methods=['GET','POST'])
 def mirrors():
+    if request.method == 'GET':
+        return mirrors_get()
+    elif request.method == 'POST':
+        return mirrors_post()
+
+def mirrors_get():
     result = []
 
     limit = int(request.args.get('limit', 100))
@@ -198,3 +205,31 @@ def mirrors():
         return Response(json.dumps(result), mimetype='application/json', headers=headers)
     else:
         raise InvalidAPIUsage('Invalid request', 410)
+
+def mirrors_post():
+
+    handler = Mirrors()
+
+    # validation
+    j = request.get_json()
+    if j['uri'] is None:
+        raise InvalidAPIUsage('You must provide a URI when creating a new mirror.', 404)
+
+    # fill data with all the fields necessary for creating a mirror entry
+    data = {}
+    data['name']     = str( j['name'] )
+    data['label']    = str( j['label'] )
+    data['uri']      = str( j['uri'] )
+    data['provider'] = str( j['provider'] )
+
+    # create new new mirror
+    try:
+        id = handler.create_mirror(data)
+
+        # add the newly created id to the data to be returned
+        data['id'] = id
+
+        # return the object
+        return Response(json.dumps(data), status=201, mimetype='application/json')
+    except:
+        raise InvalidAPIUsage('Failed to create new mirror', 404)
