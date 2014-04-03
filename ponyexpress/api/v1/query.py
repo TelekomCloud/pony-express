@@ -207,7 +207,6 @@ def mirrors_get():
         raise InvalidAPIUsage('Invalid request', 410)
 
 def mirrors_post():
-
     handler = Mirrors()
 
     # validation

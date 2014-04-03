@@ -35,6 +35,20 @@ class Mirrors:
         # return the new object's id
         return new_mirror.id
 
+    def update_mirror_info(self, mirror, mirrordata):
+        # update all known fields
+        if 'name'     in mirrordata:
+            mirror.name     = mirrordata['name']
+        if 'uri'      in mirrordata:
+            mirror.uri      = mirrordata['uri']
+        if 'label'    in mirrordata:
+            mirror.label    = mirrordata['label']
+        if 'provider' in mirrordata:
+            mirror.provider = mirrordata['provider']
+
+        # update the database
+        db.session.commit()
+
     def update_mirror(self, mirror):
 
         # TODO: replace with better class selection
