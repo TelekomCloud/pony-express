@@ -234,7 +234,13 @@ def mirrors_post():
         raise InvalidAPIUsage('Failed to create new mirror', 404)
 
 
-@query.route('/v1/mirrors/<id>', methods=['PATCH'])
+@query.route('/v1/mirrors/<id>', methods=['PATCH', 'DELETE'])
+def mirror_by_id(id):
+    if request.method == 'PATCH':
+        return mirror_update(id)
+    elif request.method == 'DELETE':
+        return mirror_delete(id)
+
 def mirror_update(id):
     if id != '':
         mirror = Mirror.query.filter_by(id=id).first()
@@ -255,3 +261,6 @@ def mirror_update(id):
         return Response(json.dumps(result), mimetype='application/json')
     else:
         raise InvalidAPIUsage('Package not found', 404)
+
+def mirror_delete(id):
+    pass
