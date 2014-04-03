@@ -1,3 +1,11 @@
+ponyexpress (0.5.6-1) precise; urgency=low
+
+  * [ Christoph Kassen ]
+    Add Mirror API with CRUD operations
+    Fix python3 issues
+
+ -- Christoph Kassen <c.kassen@telekom.de>  Thu, 3 Apr 2014 18:03:24 +0100
+
 ponyexpress (0.5.5-1) precise; urgency=low
 
   * [ Christoph Kassen ]
