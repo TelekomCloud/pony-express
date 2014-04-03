@@ -16,7 +16,8 @@ class BasicTestCaseV1(TestServerBase):
         # before sending the request, determine if you add data to it
         data_methods = ["post", "put", "patch"]
         if method in data_methods:
-            r = req(path, data=data)
+            d = json.dumps( data )
+            r = req(path, data=d, content_type='application/json')
         else:
             r = req(path)
         # assert the response code
@@ -94,7 +95,7 @@ class BasicTestCaseV1(TestServerBase):
         m = self.MIRROR1
         j = self.request_json('/v1/mirrors', 'post', data = m, status_code = 201)
 
-        neq_(j["id"], None)
+        self.assertNotEqual(j["id"], None)
         eq_(j["uri"], m["uri"])
         eq_(j["label"], m["label"])
 
