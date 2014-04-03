@@ -232,3 +232,26 @@ def mirrors_post():
         return Response(json.dumps(data), status=201, mimetype='application/json')
     except:
         raise InvalidAPIUsage('Failed to create new mirror', 404)
+
+
+@query.route('/v1/mirrors/<id>', methods=['PATCH'])
+def mirror_update(id):
+    if id != '':
+        mirror = Mirror.query.filter_by(id=id).first()
+    else:
+        raise InvalidAPIUsage('Invalid API usage', 410)
+
+    if mirror:
+        # update all known fields
+        mirrordata = request.get_json()
+        handler = Mirrors()
+        handler.update_mirror_info(mirror, mirrordata)
+
+        # extract the result for the response
+        result = {'id': mirror.id, 'name': mirror.name, 'uri': mirror.uri, 'label': mirror.label,
+                  'provider': mirror.provider
+                  }
+
+        return Response(json.dumps(result), mimetype='application/json')
+    else:
+        raise InvalidAPIUsage('Package not found', 404)
