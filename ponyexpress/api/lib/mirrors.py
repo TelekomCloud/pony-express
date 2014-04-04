@@ -152,8 +152,8 @@ class Mirrors:
 
                         if res < 0:
                             # mirror is newer
-                            pkg = {'pkg': package, 'version': package.pkgversion, 'upstream': mp.pkgversion}
-                            outdated_packages.append(pkg)
+                            package.upstream_version = mp.pkgversion
+                            outdated_packages.append(package)
                         # elif res == 0:
                         #     # versions match
                         #     pass

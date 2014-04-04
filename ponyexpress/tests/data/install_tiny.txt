@@ -12,7 +12,7 @@
     },
     {
       "name": "adduser",
-      "uri": "http://us.archive.ubuntu.com/ubuntu/pool/main/a/adduser/adduser_3.113ubuntu2_all.deb",
+      "uri": "http://us.archive.ubuntu.com/ubuntu/pool/main/a/adduser/adduser_3.113ubuntu1_all.deb",
       "summary": "add and remove users and groups",
       "version": "3.113ubuntu1",
       "architecture": "all",

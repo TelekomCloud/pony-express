@@ -1,9 +1,11 @@
 from flask import Blueprint, request, Response, json
-from ponyexpress.models.package import Package
-from ponyexpress.models.node import Node
-from ponyexpress.models.mirror import Mirror
-from ponyexpress.api.exceptions import *
 from ponyexpress.api.lib.mirrors import Mirrors
+
+from ponyexpress.models import Mirror, Package, PackageHistory, Node
+
+from ponyexpress.api.exceptions import *
+
+from ponyexpress.api.lib.helpers import Pagination
 
 query = Blueprint('query', __name__)
 
@@ -103,7 +105,7 @@ def packages():
     filter = str(request.args.get('filter', ''))
 
     outdated = str(request.args.get('outdated', ''))
-    mirror = str(request.args.get('mirror', ''))
+    mirror = int(request.args.get('mirror', -1))
 
     if outdated == '':
         if (10 <= limit <= 100) and page >= 1:
@@ -115,14 +117,34 @@ def packages():
             else:
                 paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
                                                                                             error_out=False)
-    elif outdated != '' and mirror != '':
-        # create paginator
-        pass
+    elif outdated != '' and mirror > 0:
+        # Mirror api lib
+        mirrors = Mirrors()
+
+        # Select mirror
+        mirror = Mirror.query.filter_by(id=mirror).first()
+
+        nodes_filter = '%%*%%'
+        if filter != '':
+            nodes_filter = ('%%%s%%' % filter)
+
+        if mirror:
+            outdated_packages = mirrors.get_outdated_packages(nodes_filter, mirror)
+
+            length = len(outdated_packages)
+            paginator = Pagination(page=page, per_page=limit, total_count=length)
+            paginator.items = outdated_packages
+        else:
+            paginator = None
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
     if paginator:
         for p in paginator.items:
+
+            #if type(p) is PackageHistory:
+            #    p = p.to_package()
+
             l = len(result)
             index = ((l - 1), 0)[0 > (l - 1)]
 
@@ -138,6 +160,7 @@ def packages():
                     'uri': p.uri,
                     'provider': p.provider,
                     'architecture': p.architecture,
+                    'upstream': p.upstream_version
                 }
                 ver = {'version': p.version, 'id': p.sha}
                 r_p['versions'].append(ver)
