@@ -60,8 +60,8 @@ class TestMirrors(TestServerBase):
         self.assertIsNotNone(packages)
         self.assertNotEqual(packages, [])
 
-        self.assertEqual(packages[0]['version'], '3.113ubuntu1')
-        self.assertEqual(packages[0]['upstream'], '3.113ubuntu2')
+        self.assertEqual(packages[0].pkgversion, '3.113ubuntu1')
+        self.assertEqual(packages[0].upstream_version, '3.113ubuntu2')
 
     def test_version_compare(self):
         self.mirrors = Mirrors()

@@ -38,11 +38,13 @@ def import_testdata():
         mirrors = Mirrors()
 
         mirror = Mirror()
-        mirror.id = 1
         mirror.provider = 'apt'
         mirror.name = 'Test'
         mirror.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
         mirror.label = 'Test'
+
+        db.session.add(mirror)
+        db.session.commit()
 
         path = os.path.dirname(__file__)
         datafile = os.path.join(path, '../ponyexpress/tests/data/install_tiny.txt')

@@ -21,3 +21,7 @@ class Package(db.Model):
 
     def __repr__(self):
         return '<Package %r>' % self.name
+
+    @property
+    def upstream_version(self):
+        return ''

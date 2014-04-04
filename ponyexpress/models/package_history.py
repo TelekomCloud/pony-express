@@ -14,9 +14,21 @@ class PackageHistory(db.Model):
     pkgname = db.Column(db.String(255))
     pkgversion = db.Column(db.String(64))
     pkgsource = db.Column(db.Text)
+    pkgarch = db.Column(db.String(16))
 
     # date installed
     installed = db.Column(db.DATE)
+
+    upstream_version = ''
+
+    provider = ''
+    summary = ''
+
+    sha = db.synonym('pkgsha')
+    name = db.synonym('pkgname')
+    version = db.synonym('pkgversion')
+    uri = db.synonym('pkgsource')
+    architecture = db.synonym('pkgarch')
 
     def __init__(self, nodename, pkgsha, pkgname, pkgversion, pkgsource, installdate):
         self.nodename = nodename
