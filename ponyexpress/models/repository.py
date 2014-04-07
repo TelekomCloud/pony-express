@@ -1,8 +1,8 @@
 from ponyexpress.database import db
 
 
-class Mirror(db.Model):
-    __tablename__ = 'mirrors'
+class Repository(db.Model):
+    __tablename__ = 'repositories'
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 

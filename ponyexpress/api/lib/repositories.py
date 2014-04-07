@@ -4,12 +4,12 @@ import re
 
 from ponyexpress.database import db
 from ponyexpress.api.lib.providers import *
-from ponyexpress.models.mirror import Mirror
-from ponyexpress.models.mirror_history import MirrorHistory
+from ponyexpress.models.repository import Repository
+from ponyexpress.models.repo_history import RepoHistory
 from ponyexpress.models.package_history import PackageHistory
 
 
-class Mirrors:
+class Repositories:
     provider = None
 
     pattern = None  # store the compiled regex pattern
@@ -17,13 +17,13 @@ class Mirrors:
     def __init__(self):
         pass
 
-    def create_mirror(self, mirrordata):
+    def create_repository(self, mirrordata):
         # name, uri, label, provider   +   id
 
         # skip checking for the existance of an mirror
         # could be done via URI only at this step
 
-        new_mirror          = Mirror()
+        new_mirror          = Repository()
         new_mirror.name     = mirrordata['name']
         new_mirror.label    = mirrordata['label']
         new_mirror.uri      = mirrordata['uri']
@@ -35,7 +35,7 @@ class Mirrors:
         # return the new object's id
         return new_mirror.id
 
-    def update_mirror_info(self, mirror, mirrordata):
+    def update_repository_info(self, mirror, mirrordata):
         # update all known fields
         if 'name'     in mirrordata:
             mirror.name     = mirrordata['name']
@@ -49,12 +49,12 @@ class Mirrors:
         # update the database
         db.session.commit()
 
-    def delete_mirror(self, mirror):
+    def delete_repository(self, mirror):
         # remove the entry
         db.session.delete(mirror)
         db.session.commit()
 
-    def update_mirror(self, mirror):
+    def update_repository(self, mirror):
 
         # TODO: replace with better class selection
         if mirror.provider == 'apt':
@@ -72,7 +72,7 @@ class Mirrors:
                 mvals = metadata.values()
 
             for m in mvals:
-                hist = MirrorHistory(mirror, m['sha256'], m['package'], m['version'], m['filename'], date.today())
+                hist = RepoHistory(mirror, m['sha256'], m['package'], m['version'], m['filename'], date.today())
 
                 db.session.add(hist)
             db.session.commit()
@@ -100,7 +100,7 @@ class Mirrors:
             #             matched_metadata[p.pkgsha] = mp
             #
             #             # Create the mirror history data
-            #             hist = MirrorHistory(mirror.uri, mp['sha256'], mp['name'], mp['version'], mp['filename'],
+            #             hist = RepoHistory(mirror.uri, mp['sha256'], mp['name'], mp['version'], mp['filename'],
             #                                  date.today(), mirror.provider)
             #
             #             db.session.add(hist)
@@ -110,7 +110,7 @@ class Mirrors:
             #             for m in metadata.itervalues():
             #                 if m['package'] == p.pkgname:
             #                     # We know the package
-            #                     hist = MirrorHistory(mirror.uri, m['sha256'], m['name'], m['version'], m['filename'],
+            #                     hist = RepoHistory(mirror.uri, m['sha256'], m['name'], m['version'], m['filename'],
             #                                  date.today(), mirror.provider)
             #
             #                     db.session.add(hist)
@@ -142,9 +142,9 @@ class Mirrors:
             for package in packages_history:
                 try:
                     # get packages from selected set of mirrors, filter by label
-                    mp = MirrorHistory.query.filter(MirrorHistory.pkgname == package.pkgname,
-                                                    MirrorHistory.mirror_id == mirror.id). \
-                        order_by(MirrorHistory.pkgversion).first()
+                    mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname,
+                                                    RepoHistory.mirror_id == mirror.id). \
+                        order_by(RepoHistory.pkgversion).first()
 
                     if mp is not None:
                         # compare versions

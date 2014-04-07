@@ -1,26 +1,15 @@
 from ponyexpress.database import db
 
-from ponyexpress.models.mirror import Mirror
 
-# class Parent(Base):
-#     __tablename__ = 'parent'
-#     id = Column(Integer, primary_key=True)
-#     child_id = Column(Integer, ForeignKey('child.id'))
-#     child = relationship("Child")
-#
-# class Child(Base):
-#     __tablename__ = 'child'
-#     id = Column(Integer, primary_key=True)
-
-class MirrorHistory(db.Model):
-    __tablename__ = 'mirrorhistory'
+class RepoHistory(db.Model):
+    __tablename__ = 'repohistory'
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 
     #node
     #mirror = db.Column(db.Integer)
-    mirror_id = db.Column(db.Integer, db.ForeignKey('mirrors.id'))
-    mirror = db.relationship("Mirror")
+    mirror_id = db.Column(db.Integer, db.ForeignKey('repositories.id'))
+    mirror = db.relationship("Repository")
 
     #package
     pkgsha = db.Column(db.String(255))
@@ -42,5 +31,5 @@ class MirrorHistory(db.Model):
         self.released = releasedate
 
     def __repr__(self):
-        return '<MirrorHistory %r>' % (self.pkgname)
+        return '<RepoHistory %r>' % (self.pkgname)
 

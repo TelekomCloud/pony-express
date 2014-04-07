@@ -1,7 +1,7 @@
 from flask import Blueprint, request, Response, json
-from ponyexpress.api.lib.mirrors import Mirrors
+from ponyexpress.api.lib.repositories import Repositories
 
-from ponyexpress.models import Mirror, Package, PackageHistory, Node
+from ponyexpress.models import Repository, Package, PackageHistory, Node
 
 from ponyexpress.api.exceptions import *
 
@@ -118,11 +118,11 @@ def packages():
                 paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
                                                                                             error_out=False)
     elif outdated != '' and mirror > 0:
-        # Mirror api lib
-        mirrors = Mirrors()
+        # Repository api lib
+        mirrors = Repositories()
 
         # Select mirror
-        mirror = Mirror.query.filter_by(id=mirror).first()
+        mirror = Repository.query.filter_by(id=mirror).first()
 
         nodes_filter = '%%*%%'
         if filter != '':
@@ -208,7 +208,7 @@ def mirrors_get():
 
     if (10 <= limit <= 100) and page >= 1:
         #queried_nodes = Node.query.limit(limit).offset(offset)
-        paginator = Mirror.query.paginate(page=page, per_page=limit, error_out=False)
+        paginator = Repository.query.paginate(page=page, per_page=limit, error_out=False)
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
@@ -230,7 +230,7 @@ def mirrors_get():
         raise InvalidAPIUsage('Invalid request', 410)
 
 def mirrors_post():
-    handler = Mirrors()
+    handler = Repositories()
 
     # validation
     j = request.get_json()
@@ -246,7 +246,7 @@ def mirrors_post():
 
     # create new new mirror
     try:
-        id = handler.create_mirror(data)
+        id = handler.create_repository(data)
 
         # add the newly created id to the data to be returned
         data['id'] = id
@@ -266,15 +266,15 @@ def mirror_by_id(id):
 
 def mirror_update(id):
     if id != '':
-        mirror = Mirror.query.filter_by(id=id).first()
+        mirror = Repository.query.filter_by(id=id).first()
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
 
     if mirror:
         # update all known fields
         mirrordata = request.get_json()
-        handler = Mirrors()
-        handler.update_mirror_info(mirror, mirrordata)
+        handler = Repositories()
+        handler.update_repository_info(mirror, mirrordata)
 
         # extract the result for the response
         result = {'id': mirror.id, 'name': mirror.name, 'uri': mirror.uri, 'label': mirror.label,
@@ -287,15 +287,15 @@ def mirror_update(id):
 
 def mirror_delete(id):
     if id != '':
-        mirror = Mirror.query.filter_by(id=id).first()
+        mirror = Repository.query.filter_by(id=id).first()
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
 
     if mirror:
         id = mirror.id
         # remove the mirror
-        handler = Mirrors()
-        handler.delete_mirror(mirror)
+        handler = Repositories()
+        handler.delete_repository(mirror)
 
         # return
         return Response('', status=204, mimetype='application/json')

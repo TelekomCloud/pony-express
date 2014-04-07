@@ -2,11 +2,11 @@ import os
 
 from .test_server import *
 
-from ponyexpress.api.lib.mirrors import Mirrors
-from ponyexpress.models.mirror import Mirror
+from ponyexpress.api.lib.repositories import Repositories
+from ponyexpress.models.repository import Repository
 from ponyexpress.api.lib.package_import import PackageImport
 
-from ponyexpress.models.mirror_history import MirrorHistory
+from ponyexpress.models.repo_history import RepoHistory
 
 
 class TestMirrors(TestServerBase):
@@ -14,9 +14,9 @@ class TestMirrors(TestServerBase):
     def test_update_mirror(self):
         """Test package list downloading"""
 
-        self.mirrors = Mirrors()
+        self.mirrors = Repositories()
 
-        mirror = Mirror()
+        mirror = Repository()
         mirror.id = 1
         mirror.provider = 'apt'
         mirror.name = 'Test'
@@ -30,14 +30,14 @@ class TestMirrors(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        self.mirrors.update_mirror(mirror)
+        self.mirrors.update_repository(mirror)
 
-        self.assertGreater(MirrorHistory.query.count(), 1)
+        self.assertGreater(RepoHistory.query.count(), 1)
 
     def test_get_outdated_packages(self):
-        self.mirrors = Mirrors()
+        self.mirrors = Repositories()
 
-        mirror = Mirror()
+        mirror = Repository()
         mirror.id = 1
         mirror.provider = 'apt'
         mirror.name = 'Test'
@@ -51,9 +51,9 @@ class TestMirrors(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        self.mirrors.update_mirror(mirror)
+        self.mirrors.update_repository(mirror)
 
-        self.assertGreater(MirrorHistory.query.count(), 5000)
+        self.assertGreater(RepoHistory.query.count(), 5000)
 
         packages = self.mirrors.get_outdated_packages('ponyexpress', mirror)
 
@@ -64,7 +64,7 @@ class TestMirrors(TestServerBase):
         self.assertEqual(packages[0].upstream_version, '3.113ubuntu2')
 
     def test_version_compare(self):
-        self.mirrors = Mirrors()
+        self.mirrors = Repositories()
 
         vers = ['1.0.0', '1.0.1',
                 '0.5.7', '0.20',
