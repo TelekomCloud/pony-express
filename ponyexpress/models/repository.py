@@ -18,5 +18,5 @@ class Repository(db.Model):
         pass
 
     def __repr__(self):
-        return '<Node %r>' % self.name
+        return '<Repository %r>' % self.name
 

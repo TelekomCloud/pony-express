@@ -9,19 +9,19 @@ from ponyexpress.api.lib.package_import import PackageImport
 from ponyexpress.models.repo_history import RepoHistory
 
 
-class TestMirrors(TestServerBase):
+class TestRepository(TestServerBase):
 
-    def test_update_mirror(self):
+    def test_update_repository(self):
         """Test package list downloading"""
 
-        self.mirrors = Repositories()
+        self.repositories = Repositories()
 
-        mirror = Repository()
-        mirror.id = 1
-        mirror.provider = 'apt'
-        mirror.name = 'Test'
-        mirror.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
-        mirror.label = 'Test'
+        repo = Repository()
+        repo.id = 1
+        repo.provider = 'apt'
+        repo.name = 'Test'
+        repo.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
+        repo.label = 'Test'
 
         path = os.path.dirname(__file__)
         datafile = os.path.join(path, 'data/install_tiny.txt')
@@ -30,19 +30,19 @@ class TestMirrors(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        self.mirrors.update_repository(mirror)
+        self.repositories.update_repository(repo)
 
         self.assertGreater(RepoHistory.query.count(), 1)
 
     def test_get_outdated_packages(self):
-        self.mirrors = Repositories()
+        self.repositories = Repositories()
 
-        mirror = Repository()
-        mirror.id = 1
-        mirror.provider = 'apt'
-        mirror.name = 'Test'
-        mirror.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
-        mirror.label = 'Test'
+        repo = Repository()
+        repo.id = 1
+        repo.provider = 'apt'
+        repo.name = 'Test'
+        repo.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
+        repo.label = 'Test'
 
         path = os.path.dirname(__file__)
         datafile = os.path.join(path, 'data/install_tiny.txt')
@@ -51,11 +51,11 @@ class TestMirrors(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        self.mirrors.update_repository(mirror)
+        self.repositories.update_repository(repo)
 
         self.assertGreater(RepoHistory.query.count(), 5000)
 
-        packages = self.mirrors.get_outdated_packages('ponyexpress', mirror)
+        packages = self.repositories.get_outdated_packages('ponyexpress', repo)
 
         self.assertIsNotNone(packages)
         self.assertNotEqual(packages, [])
@@ -64,7 +64,7 @@ class TestMirrors(TestServerBase):
         self.assertEqual(packages[0].upstream_version, '3.113ubuntu2')
 
     def test_version_compare(self):
-        self.mirrors = Repositories()
+        self.repositories = Repositories()
 
         vers = ['1.0.0', '1.0.1',
                 '0.5.7', '0.20',
@@ -74,19 +74,19 @@ class TestMirrors(TestServerBase):
         ]
 
         # first two
-        self.assertEqual(self.mirrors.ver_cmp(vers[0], vers[1]), -1)
+        self.assertEqual(self.repositories.ver_cmp(vers[0], vers[1]), -1)
 
         # third and fourth
-        self.assertEqual(self.mirrors.ver_cmp(vers[2], vers[3]), 1)
+        self.assertEqual(self.repositories.ver_cmp(vers[2], vers[3]), 1)
 
         # with ubuntu string
-        self.assertEqual(self.mirrors.ver_cmp(vers[4], vers[5]), 1)
+        self.assertEqual(self.repositories.ver_cmp(vers[4], vers[5]), 1)
 
         #with ubuntu, upstream version change
-        self.assertEqual(self.mirrors.ver_cmp(vers[6], vers[7]), -1)
+        self.assertEqual(self.repositories.ver_cmp(vers[6], vers[7]), -1)
 
         #
-        self.assertEqual(self.mirrors.ver_cmp(vers[8], vers[8]), 0)
+        self.assertEqual(self.repositories.ver_cmp(vers[8], vers[8]), 0)
 
 
 if __name__ == '__main__':

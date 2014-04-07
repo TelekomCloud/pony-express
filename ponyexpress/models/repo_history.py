@@ -7,9 +7,8 @@ class RepoHistory(db.Model):
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
 
     #node
-    #mirror = db.Column(db.Integer)
-    mirror_id = db.Column(db.Integer, db.ForeignKey('repositories.id'))
-    mirror = db.relationship("Repository")
+    repo_id = db.Column(db.Integer, db.ForeignKey('repositories.id'))
+    repository = db.relationship("Repository")
 
     #package
     pkgsha = db.Column(db.String(255))
@@ -20,8 +19,8 @@ class RepoHistory(db.Model):
     # date installed
     released = db.Column(db.DATE)
 
-    def __init__(self, mirror, pkgsha, pkgname, pkgversion, pkgsource, releasedate):
-        self.mirror = mirror
+    def __init__(self, repository, pkgsha, pkgname, pkgversion, pkgsource, releasedate):
+        self.repository = repository
 
         self.pkgsha = pkgsha
         self.pkgname = pkgname

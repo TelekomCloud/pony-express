@@ -1,4 +1,4 @@
-## Handle configured mirrors and post
+## Handle configured repositores and query for outdated package data
 from datetime import date
 import re
 
@@ -17,48 +17,47 @@ class Repositories:
     def __init__(self):
         pass
 
-    def create_repository(self, mirrordata):
+    def create_repository(self, repodata):
         # name, uri, label, provider   +   id
 
-        # skip checking for the existance of an mirror
+        # skip checking for the existance of a repo
         # could be done via URI only at this step
+        new_repo          = Repository()
+        new_repo.name     = repodata['name']
+        new_repo.label    = repodata['label']
+        new_repo.uri      = repodata['uri']
+        new_repo.provider = repodata['provider']
 
-        new_mirror          = Repository()
-        new_mirror.name     = mirrordata['name']
-        new_mirror.label    = mirrordata['label']
-        new_mirror.uri      = mirrordata['uri']
-        new_mirror.provider = mirrordata['provider']
-
-        db.session.add(new_mirror)
+        db.session.add(new_repo)
         db.session.commit()
 
         # return the new object's id
-        return new_mirror.id
+        return new_repo.id
 
-    def update_repository_info(self, mirror, mirrordata):
+    def update_repository_info(self, repository, repodata):
         # update all known fields
-        if 'name'     in mirrordata:
-            mirror.name     = mirrordata['name']
-        if 'uri'      in mirrordata:
-            mirror.uri      = mirrordata['uri']
-        if 'label'    in mirrordata:
-            mirror.label    = mirrordata['label']
-        if 'provider' in mirrordata:
-            mirror.provider = mirrordata['provider']
+        if 'name' in repodata:
+            repository.name = repodata['name']
+        if 'uri' in repodata:
+            repository.uri = repodata['uri']
+        if 'label' in repodata:
+            repository.label = repodata['label']
+        if 'provider' in repodata:
+            repository.provider = repodata['provider']
 
         # update the database
         db.session.commit()
 
-    def delete_repository(self, mirror):
+    def delete_repository(self, repository):
         # remove the entry
-        db.session.delete(mirror)
+        db.session.delete(repository)
         db.session.commit()
 
-    def update_repository(self, mirror):
+    def update_repository(self, repository):
 
         # TODO: replace with better class selection
-        if mirror.provider == 'apt':
-            m = AptMirror(mirror.uri)
+        if repository.provider == 'apt':
+            m = AptRepository(repository.uri)
 
             metadata = m.fetch_metadata()
         else:
@@ -72,63 +71,13 @@ class Repositories:
                 mvals = metadata.values()
 
             for m in mvals:
-                hist = RepoHistory(mirror, m['sha256'], m['package'], m['version'], m['filename'], date.today())
+                hist = RepoHistory(repository, m['sha256'], m['package'], m['version'], m['filename'], date.today())
 
                 db.session.add(hist)
             db.session.commit()
 
-            # # Process package information and compare with local storage
-            # # TODO: how do we handle packages which are present on multiple mirrors?
-            # # TODO: select only packages from the current mirror
-            # local_packages = PackageHistory.query.all()
-            #
-            # if local_packages is not None:
-            #     # Compare packages installed into our environment with those provided by the mirror
-            #     # return a list of packages which contains all packages on the mirror which match a package name
-            #     # already present in our env
-            #
-            #     # We delibarately ignore those packages which are present on the mirror but are, at the time of
-            #     # checking, not yet installed into our environment. Once any new package is installed we will track the
-            #     # version history on the mirror automatically on the next run
-            #
-            #     matched_metadata = {}
-            #
-            #     for p in local_packages:
-            #         if p.pkgsha in metadata.keys():
-            #             # Create metadata structure with packages present locally and on the mirror
-            #             mp = metadata[p.pkgsha]
-            #             matched_metadata[p.pkgsha] = mp
-            #
-            #             # Create the mirror history data
-            #             hist = RepoHistory(mirror.uri, mp['sha256'], mp['name'], mp['version'], mp['filename'],
-            #                                  date.today(), mirror.provider)
-            #
-            #             db.session.add(hist)
-            #             db.session.commit()
-            #         else:
-            #             # We don't know the sha key, check for the package name
-            #             for m in metadata.itervalues():
-            #                 if m['package'] == p.pkgname:
-            #                     # We know the package
-            #                     hist = RepoHistory(mirror.uri, m['sha256'], m['name'], m['version'], m['filename'],
-            #                                  date.today(), mirror.provider)
-            #
-            #                     db.session.add(hist)
-            #                     db.session.commit()
-            #
-            #     return matched_metadata
-            #else:
-            #    # We have no packages in our package history. This most likely means that pony has not yet recieved
-            #    # updates from any client. Thus we do not check any metadata provided by the mirror yet.
-            #    # Once pony recieves package data from any client we will compare the data on the next run
-            #    return None
-
-    def get_installed_packages(self, metadata):
-        """Filter mirror package metadata to include only packages available in the database"""
-        pass
-
-    def get_outdated_packages(self, node_filter, mirror):
-        """Compare packages available on the mirror with those available on a set of nodes"""
+    def get_outdated_packages(self, node_filter, repository):
+        """Compare packages available on the repository server with those available on a set of nodes"""
 
         outdated_packages = []
 
@@ -141,9 +90,9 @@ class Repositories:
 
             for package in packages_history:
                 try:
-                    # get packages from selected set of mirrors, filter by label
+                    # get packages from selected set of repositories, filter by label
                     mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname,
-                                                    RepoHistory.mirror_id == mirror.id). \
+                                                    RepoHistory.repo_id == repository.id). \
                         order_by(RepoHistory.pkgversion).first()
 
                     if mp is not None:
@@ -151,15 +100,9 @@ class Repositories:
                         res = self.ver_cmp(package.pkgversion, mp.pkgversion)
 
                         if res < 0:
-                            # mirror is newer
+                            # repository is newer
                             package.upstream_version = mp.pkgversion
                             outdated_packages.append(package)
-                        # elif res == 0:
-                        #     # versions match
-                        #     pass
-                        # elif res > 0:
-                        #     # local is newer than mirror
-                        #     pass
                 except:
                     # Catch exceptions and move on to the next object
                     next()

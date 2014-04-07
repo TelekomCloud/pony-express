@@ -83,7 +83,7 @@ class TestServerBase(unittest.TestCase):
         ]
     }
 
-    MIRROR1 = {
+    REPO1 = {
         "name": "Magus Repository",
         "label": "live",
         "uri": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz",
@@ -126,11 +126,11 @@ class TestServerBase(unittest.TestCase):
         test_import = PackageImport()
         test_import.process_node_info(node_dict)
 
-    def addMirror(self, mirror_dict):
-        """A method to add mirrors for test purposes"""
+    def addRepository(self, repo_dict):
+        """A method to add repositories for test purposes"""
 
         handler = Repositories()
-        return handler.create_repository( mirror_dict )
+        return handler.create_repository( repo_dict )
 
     def process_data(self, filename):
         json_data = open(filename)

@@ -6,24 +6,24 @@ import tempfile
 from ponyexpress.api.lib.providers import Provider
 
 
-class AptMirror(Provider):
-    _mirror_url = None
+class AptRepository(Provider):
+    _repo_url = None
 
     _key_list = ['SHA256', 'Package', 'Version', 'Filename', 'Description', 'Architecture']
 
     def __init__(self, url):
-        self._mirror_url = url
+        self._repo_url = url
 
     def set_url(self, url):
-        self._mirror_url = url
+        self._repo_url = url
 
     def fetch_metadata(self):
-        if self._mirror_url is None:
+        if self._repo_url is None:
             return None
 
         chunk_size = 1024 * 8
 
-        r = requests.get(self._mirror_url, stream=True)
+        r = requests.get(self._repo_url, stream=True)
 
         if r.status_code == 200:
             tmpfd = tempfile.TemporaryFile(mode='w+b')

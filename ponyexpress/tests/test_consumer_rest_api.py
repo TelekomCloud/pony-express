@@ -93,22 +93,22 @@ class BasicTestCaseV1(TestServerBase):
         eq_(type(j['nodes'][0]), dict)
         eq_(j['nodes'][0]['id'], 'node2')
 
-    def testCreateMirror(self):
-        m = self.MIRROR1
-        j = self.request_json('/v1/mirrors', 'post', data = m, status_code = 201)
+    def testCreateRepository(self):
+        m = self.REPO1
+        j = self.request_json('/v1/repositories', 'post', data = m, status_code = 201)
 
         self.assertNotEqual(j["id"], None)
         eq_(j["uri"], m["uri"])
         eq_(j["label"], m["label"])
 
-    def testReadMirrorsEmpty(self):
-        j = self.get_json('/v1/mirrors')
+    def testReadRepositoriesEmpty(self):
+        j = self.get_json('/v1/repositories')
         eq_(type(j), list)
 
-    def testReadMirrors(self):
-        id = self.addMirror(self.MIRROR1)
-        m = self.MIRROR1
-        j = self.get_json('/v1/mirrors')
+    def testReadRepositories(self):
+        id = self.addRepository(self.REPO1)
+        m = self.REPO1
+        j = self.get_json('/v1/repositories')
         eq_(type(j), list)
         eq_(len(j), 1)
 
@@ -118,23 +118,23 @@ class BasicTestCaseV1(TestServerBase):
         eq_(j[0]["label"], m["label"])
         eq_(j[0]["provider"], m["provider"])
 
-    def testUpdateMirror(self):
-        id = self.addMirror(self.MIRROR1)
-        m = self.MIRROR1
+    def testUpdateRepository(self):
+        id = self.addRepository(self.REPO1)
+        m = self.REPO1
         # create a new random label
         label = str(uuid.uuid4())
         update_data = {
             "label" : label
         }
-        # send the request to update this mirror with the new data
-        j = self.request_json('/v1/mirrors/'+str(id), 'patch', data = update_data, status_code = 200)
+        # send the request to update this repository with the new data
+        j = self.request_json('/v1/repositories/'+str(id), 'patch', data = update_data, status_code = 200)
 
         # check if the response of this update has the new data
         eq_(j["id"], id)
         eq_(j["label"], label)
 
         # check if the get requests also have the update
-        j = self.get_json('/v1/mirrors')
+        j = self.get_json('/v1/repositories')
         eq_(type(j), list)
         eq_(len(j), 1)
         eq_(j[0]["id"], id)
@@ -143,7 +143,7 @@ class BasicTestCaseV1(TestServerBase):
         eq_(j[0]["label"], label)
         eq_(j[0]["provider"], m["provider"])
 
-    def testDeleteMirror(self):
-        id = self.addMirror(self.MIRROR1)
-        # send the request to remove this mirror
-        j = self.request_json('/v1/mirrors/'+str(id), 'delete', status_code = 204)
+    def testDeleteRepository(self):
+        id = self.addRepository(self.REPO1)
+        # send the request to remove this repository
+        j = self.request_json('/v1/repositories/'+str(id), 'delete', status_code = 204)

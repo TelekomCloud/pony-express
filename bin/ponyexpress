@@ -35,7 +35,7 @@ def import_testdata():
 
     with app.app_context():
         db.create_all()
-        mirrors = Repositories()
+        repositories = Repositories()
 
         repo = Repository()
         repo.provider = 'apt'
@@ -56,9 +56,7 @@ def import_testdata():
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        mirrors.update_repository(mirror)
-
-        #packages = self.mirrors.get_outdated_packages('ponyexpress', mirror)
+        repositories.update_repository(repo)
 
 if __name__ == "__main__":
     manager.run()
