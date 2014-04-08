@@ -5,7 +5,7 @@ import json
 from ponyexpress import create_app
 from ponyexpress.database import db
 from ponyexpress.api.lib.package_import import PackageImport
-from ponyexpress.api.lib.mirrors import Mirrors
+from ponyexpress.api.lib.repositories import Repositories
 
 #=================================
 # TODO, we will stub this for now
@@ -83,8 +83,8 @@ class TestServerBase(unittest.TestCase):
         ]
     }
 
-    MIRROR1 = {
-        "name": "Magus Mirror",
+    REPO1 = {
+        "name": "Magus Repository",
         "label": "live",
         "uri": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz",
         "provider": "apt"
@@ -126,11 +126,11 @@ class TestServerBase(unittest.TestCase):
         test_import = PackageImport()
         test_import.process_node_info(node_dict)
 
-    def addMirror(self, mirror_dict):
-        """A method to add mirrors for test purposes"""
+    def addRepository(self, repo_dict):
+        """A method to add repositories for test purposes"""
 
-        handler = Mirrors()
-        return handler.create_mirror( mirror_dict )
+        handler = Repositories()
+        return handler.create_repository( repo_dict )
 
     def process_data(self, filename):
         json_data = open(filename)

@@ -14,10 +14,10 @@ import json
 from ponyexpress import create_app
 from ponyexpress.database import db
 
-from ponyexpress.api.lib.mirrors import Mirrors
+from ponyexpress.api.lib.repositories import Repositories
 from ponyexpress.api.lib.package_import import PackageImport
 
-from ponyexpress.models.mirror import Mirror
+from ponyexpress.models.repository import Repository
 
 ##
 # Create ponyexpress app object
@@ -35,15 +35,15 @@ def import_testdata():
 
     with app.app_context():
         db.create_all()
-        mirrors = Mirrors()
+        repositories = Repositories()
 
-        mirror = Mirror()
-        mirror.provider = 'apt'
-        mirror.name = 'Test'
-        mirror.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
-        mirror.label = 'Test'
+        repo = Repository()
+        repo.provider = 'apt'
+        repo.name = 'Test'
+        repo.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
+        repo.label = 'Test'
 
-        db.session.add(mirror)
+        db.session.add(repo)
         db.session.commit()
 
         path = os.path.dirname(__file__)
@@ -56,9 +56,7 @@ def import_testdata():
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        mirrors.update_mirror(mirror)
-
-        #packages = self.mirrors.get_outdated_packages('ponyexpress', mirror)
+        repositories.update_repository(repo)
 
 if __name__ == "__main__":
     manager.run()

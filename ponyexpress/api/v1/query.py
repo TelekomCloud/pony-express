@@ -1,7 +1,7 @@
 from flask import Blueprint, request, Response, json
-from ponyexpress.api.lib.mirrors import Mirrors
+from ponyexpress.api.lib.repositories import Repositories
 
-from ponyexpress.models import Mirror, Package, PackageHistory, Node
+from ponyexpress.models import Repository, Package, PackageHistory, Node
 
 from ponyexpress.api.exceptions import *
 
@@ -105,7 +105,7 @@ def packages():
     filter = str(request.args.get('filter', ''))
 
     outdated = str(request.args.get('outdated', ''))
-    mirror = int(request.args.get('mirror', -1))
+    repo = int(request.args.get('repo', -1))
 
     if outdated == '':
         if (10 <= limit <= 100) and page >= 1:
@@ -117,19 +117,19 @@ def packages():
             else:
                 paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
                                                                                             error_out=False)
-    elif outdated != '' and mirror > 0:
-        # Mirror api lib
-        mirrors = Mirrors()
+    elif outdated != '' and repo > 0:
+        # Repository api lib
+        repositories = Repositories()
 
-        # Select mirror
-        mirror = Mirror.query.filter_by(id=mirror).first()
+        # Select repo
+        repo = Repository.query.filter_by(id=repo).first()
 
         nodes_filter = '%%*%%'
         if filter != '':
             nodes_filter = ('%%%s%%' % filter)
 
-        if mirror:
-            outdated_packages = mirrors.get_outdated_packages(nodes_filter, mirror)
+        if repo:
+            outdated_packages = repositories.get_outdated_packages(nodes_filter, repo)
 
             length = len(outdated_packages)
             paginator = Pagination(page=page, per_page=limit, total_count=length)
@@ -193,14 +193,14 @@ def package(id):
     else:
         raise InvalidAPIUsage('Package not found', 404)
 
-@query.route('/v1/mirrors', methods=['GET','POST'])
-def mirrors():
+@query.route('/v1/repositories', methods=['GET','POST'])
+def repositories():
     if request.method == 'GET':
-        return mirrors_get()
+        return repository_get()
     elif request.method == 'POST':
-        return mirrors_post()
+        return repository_post()
 
-def mirrors_get():
+def repository_get():
     result = []
 
     limit = int(request.args.get('limit', 100))
@@ -208,7 +208,7 @@ def mirrors_get():
 
     if (10 <= limit <= 100) and page >= 1:
         #queried_nodes = Node.query.limit(limit).offset(offset)
-        paginator = Mirror.query.paginate(page=page, per_page=limit, error_out=False)
+        paginator = Repository.query.paginate(page=page, per_page=limit, error_out=False)
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
@@ -229,24 +229,24 @@ def mirrors_get():
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
-def mirrors_post():
-    handler = Mirrors()
+def repository_post():
+    handler = Repositories()
 
     # validation
     j = request.get_json()
     if j['uri'] is None:
-        raise InvalidAPIUsage('You must provide a URI when creating a new mirror.', 404)
+        raise InvalidAPIUsage('You must provide a URI when creating a new repository.', 404)
 
-    # fill data with all the fields necessary for creating a mirror entry
+    # fill data with all the fields necessary for creating a repository entry
     data = {}
     data['name']     = str( j['name'] )
     data['label']    = str( j['label'] )
     data['uri']      = str( j['uri'] )
     data['provider'] = str( j['provider'] )
 
-    # create new new mirror
+    # create new new repository
     try:
-        id = handler.create_mirror(data)
+        id = handler.create_repository(data)
 
         # add the newly created id to the data to be returned
         data['id'] = id
@@ -254,48 +254,48 @@ def mirrors_post():
         # return the object
         return Response(json.dumps(data), status=201, mimetype='application/json')
     except:
-        raise InvalidAPIUsage('Failed to create new mirror', 404)
+        raise InvalidAPIUsage('Failed to create new repository', 404)
 
 
-@query.route('/v1/mirrors/<id>', methods=['PATCH', 'DELETE'])
-def mirror_by_id(id):
+@query.route('/v1/repositories/<id>', methods=['PATCH', 'DELETE'])
+def repository_by_id(id):
     if request.method == 'PATCH':
-        return mirror_update(id)
+        return repository_update(id)
     elif request.method == 'DELETE':
-        return mirror_delete(id)
+        return repository_delete(id)
 
-def mirror_update(id):
+def repository_update(id):
     if id != '':
-        mirror = Mirror.query.filter_by(id=id).first()
+        repo = Repository.query.filter_by(id=id).first()
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
 
-    if mirror:
+    if repo:
         # update all known fields
-        mirrordata = request.get_json()
-        handler = Mirrors()
-        handler.update_mirror_info(mirror, mirrordata)
+        repodata = request.get_json()
+        handler = Repositories()
+        handler.update_repository_info(repo, repodata)
 
         # extract the result for the response
-        result = {'id': mirror.id, 'name': mirror.name, 'uri': mirror.uri, 'label': mirror.label,
-                  'provider': mirror.provider
+        result = {'id': repo.id, 'name': repo.name, 'uri': repo.uri, 'label': repo.label,
+                  'provider': repo.provider
                   }
 
         return Response(json.dumps(result), mimetype='application/json')
     else:
         raise InvalidAPIUsage('Package not found', 404)
 
-def mirror_delete(id):
+def repository_delete(id):
     if id != '':
-        mirror = Mirror.query.filter_by(id=id).first()
+        repo = Repository.query.filter_by(id=id).first()
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
 
-    if mirror:
-        id = mirror.id
-        # remove the mirror
-        handler = Mirrors()
-        handler.delete_mirror(mirror)
+    if repo:
+        id = repo.id
+        # remove the repo
+        handler = Repositories()
+        handler.delete_repository(repo)
 
         # return
         return Response('', status=204, mimetype='application/json')
