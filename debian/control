@@ -22,5 +22,6 @@ Depends:
  python-flask,
  python-flask-migrate,
  python-flask-script,
+ python-requests
 Description: pony-express
  FIXME

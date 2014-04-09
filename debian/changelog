@@ -1,6 +1,13 @@
-ponyexpress (0.5.6-1) precise; urgency=low
+ponyexpress (0.6-1) precise; urgency=low
 
   * [ Christoph Kassen ]
+    Query apt repository servers and scan for outdated packages
+
+ -- Christoph Kassen <c.kassen@telekom.de>  Thu, 9 Apr 2014 11:36:01 +0100
+
+ponyexpress (0.5.6-1) precise; urgency=low
+
+  * [ Dominik Richter ]
     Add Mirror API with CRUD operations
     Fix python3 issues
 
