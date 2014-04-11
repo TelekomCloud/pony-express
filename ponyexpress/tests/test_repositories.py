@@ -37,12 +37,15 @@ class TestRepository(TestServerBase):
     def test_get_outdated_packages(self):
         self.repositories = Repositories()
 
-        repo = Repository()
-        repo.id = 1
-        repo.provider = 'apt'
-        repo.name = 'Test'
-        repo.uri = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
-        repo.label = 'Test'
+        # create the demo repo
+        data = {}
+        data['name'] = 'Repo1'
+        data['label'] = 'main'
+        data['uri'] = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
+        data['provider'] = 'apt'
+
+        repo_id = self.repositories.create_repository(data)
+        repo = Repository.query.filter_by(id=repo_id).first()
 
         path = os.path.dirname(__file__)
         datafile = os.path.join(path, 'data/install_tiny.txt')
@@ -55,10 +58,10 @@ class TestRepository(TestServerBase):
 
         self.assertGreater(RepoHistory.query.count(), 5000)
 
-        packages = self.repositories.get_outdated_packages('ponyexpress', repo)
+        packages = self.repositories.get_outdated_packages('ponyexpress', [repo])
 
         self.assertIsNotNone(packages)
-        self.assertNotEqual(packages, [])
+        #self.assertNotEqual(packages, [])
 
         self.assertEqual(packages[0].pkgversion, '3.113ubuntu1')
         self.assertEqual(packages[0].upstream_version, '3.113ubuntu2')
@@ -88,6 +91,22 @@ class TestRepository(TestServerBase):
         #
         self.assertEqual(self.repositories.ver_cmp(vers[8], vers[8]), 0)
 
+    def test_get_repositories(self):
+        self.repositories = Repositories()
+
+        # create the demo repo
+        data = {}
+        data['name'] = 'Repo1'
+        data['label'] = 'main'
+        data['uri'] = 'http://www.software.repo'
+        data['provider'] = 'apt'
+        repo_id = self.repositories.create_repository(data)
+
+        expression = '1,2,3'
+
+        repo_list = self.repositories.get_repositories(expression)
+        self.assertIsInstance(repo_list, list)
+        self.assertEqual(repo_list[0].id, repo_id)
 
 if __name__ == '__main__':
     unittest.main()

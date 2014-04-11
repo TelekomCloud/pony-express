@@ -7,6 +7,18 @@ from .test_server import *
 
 class BasicTestCaseV1(TestServerBase):
 
+    def prepare_repo_data(self):
+        # create the demo repo
+        data = {}
+        data['name'] = 'Repo1'
+        data['label'] = 'main'
+        data['uri'] = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
+        data['provider'] = 'apt'
+
+        repo = self.addRepository(data)
+
+        self.updateRepository(repo)
+
     def content_type_must_eq(self, response, t):
         self.assertEqual(response.headers['Content-Type'], t)
 
@@ -65,14 +77,41 @@ class BasicTestCaseV1(TestServerBase):
         self.addNode(self.DATA2)
         self.addNode(self.DATA3)
         p = self.DATA2['packages'][0]
-        j = self.get_json('/v1/packages?filter=node2')
+        j = self.get_json('/v1/packages')
         eq_(type(j), list)
-        #eq_(len(j), 2)
 
         eq_(j[0]["name"], p["name"])
         eq_(type(j[0]["versions"]), list)
         eq_(len(j[0]["versions"]), 2)
         eq_(j[0]["versions"][0]["id"], p["sha256"])
+
+    def testRequestPackagesWithFilter(self):
+        self.addNode(self.DATA2)
+        self.addNode(self.DATA3)
+        p = self.DATA2['packages'][0]
+        j = self.get_json('/v1/packages?filter=node2')
+        eq_(type(j), list)
+
+        eq_(j[0]["name"], p["name"])
+        eq_(type(j[0]["versions"]), list)
+        eq_(len(j[0]["versions"]), 2)
+        eq_(j[0]["versions"][0]["id"], p["sha256"])
+
+    def testRequestPackagesWithMultipleRepos(self):
+        self.addNode(self.DATA2)
+        self.addNode(self.DATA3)
+
+        self.prepare_repo_data()
+
+        ##
+        p = self.DATA2['packages'][0]
+        j = self.get_json('/v1/packages?outdated=true&repo=1,2')
+        self.assertIsInstance(j, list)
+
+        #eq_(j[0]["name"], p["name"])
+        #eq_(type(j[0]["versions"]), list)
+        #eq_(len(j[0]["versions"]), 2)
+        #eq_(j[0]["versions"][0]["id"], p["sha256"])
 
     def testRequestPackageInfo(self):
         self.addNode(self.DATA2)
@@ -107,12 +146,13 @@ class BasicTestCaseV1(TestServerBase):
 
     def testReadRepositories(self):
         id = self.addRepository(self.REPO1)
+
         m = self.REPO1
         j = self.get_json('/v1/repositories')
         eq_(type(j), list)
         eq_(len(j), 1)
 
-        eq_(j[0]["id"], id)
+        eq_(j[0]["id"], id.id)
         eq_(j[0]["name"], m["name"])
         eq_(j[0]["uri"], m["uri"])
         eq_(j[0]["label"], m["label"])
@@ -121,23 +161,25 @@ class BasicTestCaseV1(TestServerBase):
     def testUpdateRepository(self):
         id = self.addRepository(self.REPO1)
         m = self.REPO1
+
         # create a new random label
         label = str(uuid.uuid4())
         update_data = {
-            "label" : label
+            "label": label
         }
+
         # send the request to update this repository with the new data
-        j = self.request_json('/v1/repositories/'+str(id), 'patch', data = update_data, status_code = 200)
+        j = self.request_json('/v1/repositories/'+str(id.id), 'patch', data=update_data, status_code=200)
 
         # check if the response of this update has the new data
-        eq_(j["id"], id)
+        eq_(j["id"], id.id)
         eq_(j["label"], label)
 
         # check if the get requests also have the update
         j = self.get_json('/v1/repositories')
         eq_(type(j), list)
         eq_(len(j), 1)
-        eq_(j[0]["id"], id)
+        eq_(j[0]["id"], id.id)
         eq_(j[0]["name"], m["name"])
         eq_(j[0]["uri"], m["uri"])
         eq_(j[0]["label"], label)
@@ -146,4 +188,4 @@ class BasicTestCaseV1(TestServerBase):
     def testDeleteRepository(self):
         id = self.addRepository(self.REPO1)
         # send the request to remove this repository
-        j = self.request_json('/v1/repositories/'+str(id), 'delete', status_code = 204)
+        j = self.request_json('/v1/repositories/'+str(id.id), 'delete', status_code = 204)
