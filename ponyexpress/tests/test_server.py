@@ -146,6 +146,7 @@ class TestServerBase(unittest.TestCase):
 
         handler = Repositories()
 
+        handler.select_provider(repo)
         handler.update_repository(repo)
 
     def process_data(self, filename):

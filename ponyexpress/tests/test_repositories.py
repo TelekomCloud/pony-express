@@ -30,6 +30,7 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
+        self.repositories.select_provider(repo)
         self.repositories.update_repository(repo)
 
         self.assertGreater(RepoHistory.query.count(), 1)
@@ -54,6 +55,7 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
+        self.repositories.select_provider(repo)
         self.repositories.update_repository(repo)
 
         self.assertGreater(RepoHistory.query.count(), 5000)
@@ -63,8 +65,53 @@ class TestRepository(TestServerBase):
         self.assertIsNotNone(packages)
         #self.assertNotEqual(packages, [])
 
-        self.assertEqual(packages[0].pkgversion, '3.113ubuntu1')
-        self.assertEqual(packages[0].upstream_version, '3.113ubuntu2')
+        self.assertIsInstance(packages[0].upstream_version, list)
+        #self.assertGreaterEqual(len(packages[0].upstream_version), 1)
+
+    def test_get_outdated_packages_multi(self):
+        self.repositories = Repositories()
+
+        # create the demo repo
+        data = {}
+        data['name'] = 'Repo1'
+        data['label'] = 'main'
+        data['uri'] = 'http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz'
+        data['provider'] = 'apt'
+
+        repo_id = self.repositories.create_repository(data)
+        repo1 = Repository.query.filter_by(id=repo_id).first()
+
+        data = {}
+        data['name'] = 'Repo2'
+        data['label'] = 'beta'
+        data['uri'] = 'http://de.archive.ubuntu.com/ubuntu/dists/trusty/main/binary-amd64/Packages.gz'
+        data['provider'] = 'apt'
+
+        repo_id = self.repositories.create_repository(data)
+        repo2 = Repository.query.filter_by(id=repo_id).first()
+
+        path = os.path.dirname(__file__)
+        datafile = os.path.join(path, 'data/install_tiny.txt')
+        data_install = self.process_data(datafile)
+
+        test_importer = PackageImport()
+        test_importer.process_node_info(data_install)
+
+        self.repositories.select_provider(repo1)
+        self.repositories.update_repository(repo1)
+
+        self.repositories.select_provider(repo2)
+        self.repositories.update_repository(repo2)
+
+        self.assertGreater(RepoHistory.query.count(), 5000)
+
+        packages = self.repositories.get_outdated_packages('ponyexpress', [repo1, repo2])
+
+        self.assertIsNotNone(packages)
+        self.assertNotEqual(packages, [])
+
+        self.assertIsInstance(packages[0].upstream_version, list)
+        #self.assertGreaterEqual(len(packages[0].upstream_version), 1)
 
     def test_version_compare(self):
         self.repositories = Repositories()

@@ -17,7 +17,8 @@ class Repositories:
     def __init__(self):
         pass
 
-    def create_repository(self, repodata):
+    @staticmethod
+    def create_repository(repodata):
         # name, uri, label, provider   +   id
 
         # skip checking for the existance of a repo
@@ -34,7 +35,8 @@ class Repositories:
         # return the new object's id
         return new_repo.id
 
-    def update_repository_info(self, repository, repodata):
+    @staticmethod
+    def update_repository_info(repository, repodata):
         # update all known fields
         if 'name' in repodata:
             repository.name = repodata['name']
@@ -48,20 +50,23 @@ class Repositories:
         # update the database
         db.session.commit()
 
-    def delete_repository(self, repository):
+    @staticmethod
+    def delete_repository(repository):
         # remove the entry
         db.session.delete(repository)
         db.session.commit()
 
-    def update_repository(self, repository):
-
-        # TODO: replace with better class selection
-        if repository.provider == 'apt':
-            m = AptRepository(repository.uri)
-
-            metadata = m.fetch_metadata()
+    def select_provider(self, repo):
+        if repo.provider == 'apt':
+            self.provider = AptRepository(repo.uri)
         else:
             raise NotImplementedError()
+
+    def update_repository(self, repository):
+        if self.provider is not None:
+            metadata = self.provider.fetch_metadata()
+        else:
+            raise Exception()
 
         if metadata is not None:
 
@@ -79,7 +84,7 @@ class Repositories:
     def get_outdated_packages(self, node_filter, repo_list):
         """Compare packages available on the repository server with those available on a set of nodes"""
 
-        outdated_packages = []
+        outdated_packages = {}
 
         if not isinstance(repo_list, list):
             return []
@@ -97,19 +102,31 @@ class Repositories:
             for package in packages_history:
                 try:
                     if repo_list is not []:
+                        rl = []
                         for repo in repo_list:
-                            mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname,
-                                                          RepoHistory.repo_id == repo.id). \
-                                order_by(RepoHistory.pkgversion).first()
+                            rl.append(repo.id)
+
+                        mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname) \
+                                              .filter(RepoHistory.repo_id.in_(rl)).all()
+
+                        #TODO check if multiple packages should be returned.
+                        #TODO iterate of all packages we can find with that name
+                        #
 
                         if mp is not None:
-                            # compare versions
-                            res = self.ver_cmp(package.pkgversion, mp.pkgversion)
+                            upstream_version = []
+                            for p in mp:
+                                # compare versions
+                                res = self.ver_cmp(package.pkgversion, p.pkgversion)
 
-                            if res < 0:
-                                # repository is newer
-                                package.upstream_version = mp.pkgversion
-                                outdated_packages.append(package)
+                                if res < 0:
+                                    # repository is newer
+                                    upstream_version.append(p.pkgversion)
+
+                            package.upstream_version = upstream_version
+
+                            if package.pkgname not in outdated_packages:
+                                outdated_packages[package.pkgname] = package
                     else:
                         return []
                 except Exception as e:
@@ -117,7 +134,7 @@ class Repositories:
                     print(e)
                     #next()
 
-            return outdated_packages
+            return list(outdated_packages.values())
         else:
             return []
 

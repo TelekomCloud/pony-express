@@ -56,6 +56,7 @@ def import_testdata():
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
+        repositories.select_provider(repo)
         repositories.update_repository(repo)
 
 if __name__ == "__main__":
