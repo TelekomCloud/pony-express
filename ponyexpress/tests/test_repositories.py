@@ -31,8 +31,6 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        #self.repositories.select_provider(repo)
-
         self.repositories.provider = MockRepository()
 
         self.repositories.update_repository(repo)
@@ -59,8 +57,17 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        #self.repositories.select_provider(repo)
-        self.repositories.provider = MockRepository()
+        data = {'75da5ca65e2160e994c33d1006046c2be954efe804a24d34628d0c4cac791ce4': {
+                "package": "accountsservice",
+                "filename": "http://us.archive.ubuntu.com/ubuntu/pool/main/a/accountsservice/accountsservice_0.6.21-6ubuntu5.1_amd64.deb",
+                "description": "query and manipulate user account information",
+                "version": "0.6.21-6ubuntu5.1",
+                "architecture": "amd64",
+                "sha256": "75da5ca65e2160e994c33d1006046c2be954efe804a24d34628d0c4cac791ce4"
+            },
+        }
+
+        self.repositories.provider = MockRepository(data)
 
         self.repositories.update_repository(repo)
 
@@ -72,7 +79,10 @@ class TestRepository(TestServerBase):
         #self.assertNotEqual(packages, [])
 
         self.assertIsInstance(packages[0].upstream_version, list)
-        #self.assertGreaterEqual(len(packages[0].upstream_version), 1)
+        self.assertEqual(len(packages[0].upstream_version), 1)
+
+        self.assertEqual(packages[0].pkgversion, '0.6.15-2ubuntu9')
+        self.assertEqual(packages[0].upstream_version, ['0.6.21-6ubuntu5.1'])
 
     def test_get_outdated_packages_multi(self):
         self.repositories = Repositories()
@@ -103,13 +113,13 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        data1 = {'5d8e40ce35ea30f621573d40b17dcd21e3b974f2dd5e096c6c10701af8cdc5d0': {
+        data1 = {'75da5ca65e2160e994c33d1006046c2be954efe804a24d34628d0c4cac791ce4': {
                 "package": "accountsservice",
-                "filename": "http://us.archive.ubuntu.com/ubuntu/pool/main/a/accountsservice/accountsservice_0.6.15-2ubuntu9_amd64.deb",
+                "filename": "http://us.archive.ubuntu.com/ubuntu/pool/main/a/accountsservice/accountsservice_0.6.21-6ubuntu5.1_amd64.deb",
                 "description": "query and manipulate user account information",
-                "version": "0.6.15-2ubuntu9",
+                "version": "0.6.21-6ubuntu5.1",
                 "architecture": "amd64",
-                "sha256": "5d8e40ce35ea30f621573d40b17dcd21e3b974f2dd5e096c6c10701af8cdc5d0"
+                "sha256": "75da5ca65e2160e994c33d1006046c2be954efe804a24d34628d0c4cac791ce4"
             },
         }
 
@@ -140,7 +150,10 @@ class TestRepository(TestServerBase):
         self.assertNotEqual(packages, [])
 
         self.assertIsInstance(packages[0].upstream_version, list)
-        #self.assertGreaterEqual(len(packages[0].upstream_version), 1)
+        self.assertGreaterEqual(len(packages[0].upstream_version), 2)
+
+        self.assertEqual(packages[0].pkgversion, '0.6.15-2ubuntu9')
+        self.assertEqual(packages[0].upstream_version, ['0.6.21-6ubuntu5.1', '0.6.35-0ubuntu7'])
 
     def test_version_compare(self):
         self.repositories = Repositories()
@@ -149,6 +162,7 @@ class TestRepository(TestServerBase):
                 '0.5.7', '0.20',
                 '0.6.15-2ubuntu9', '0.6.15-2ubuntu10',
                 '0.6.15-2ubuntu9', '0.6.17-2ubuntu9',
+                '2.2.3.dfsg.1-2build1', '2.2.3.dfsg.1-2build2',
                 '0.1.1-1ubuntu1'
         ]
 
@@ -164,8 +178,35 @@ class TestRepository(TestServerBase):
         #with ubuntu, upstream version change
         self.assertEqual(self.repositories.ver_cmp(vers[6], vers[7]), -1)
 
+        self.assertEqual(self.repositories.ver_cmp(vers[8], vers[9]), -1)
         #
-        self.assertEqual(self.repositories.ver_cmp(vers[8], vers[8]), 0)
+        self.assertEqual(self.repositories.ver_cmp(vers[10], vers[10]), 0)
+
+    def test_version_parsing(self):
+        self.repositories = Repositories()
+
+        vers = [
+            "1.024~beta1+svn234",
+            "1",
+            "0.6.15-2ubuntu9",
+            "0.6.15-2ubuntu9.1",
+            "0.20",
+            "0.21.1",
+            "0.1.1-1ubuntu2.1212",
+            "3.113+nmu3ubuntu3",
+            "1:2.0.18-1ubuntu1",
+            "20100513-3.1ubuntu1",
+            "1.20120910-2",
+            "2.2.3.dfsg.1-2build1",
+            "0.3.1~ubuntu4",
+            "0.9.0-3+wheezy1",
+            "0.9.7.7ubuntu4",
+            "1.2.10~pre3-2",
+            ]
+
+        # first two
+        for i in vers:
+            self.assertEqual(self.repositories.ver_cmp(i, i), 0)
 
     def test_get_repositories(self):
         self.repositories = Repositories()
