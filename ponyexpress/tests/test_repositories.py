@@ -3,6 +3,7 @@ import os
 from .test_server import *
 
 from ponyexpress.api.lib.repositories import Repositories
+from ponyexpress.api.lib.providers import MockRepository
 from ponyexpress.models.repository import Repository
 from ponyexpress.api.lib.package_import import PackageImport
 
@@ -30,10 +31,13 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        self.repositories.select_provider(repo)
+        #self.repositories.select_provider(repo)
+
+        self.repositories.provider = MockRepository()
+
         self.repositories.update_repository(repo)
 
-        self.assertGreater(RepoHistory.query.count(), 1)
+        self.assertEqual(RepoHistory.query.count(), 1)
 
     def test_get_outdated_packages(self):
         self.repositories = Repositories()
@@ -55,10 +59,12 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        self.repositories.select_provider(repo)
+        #self.repositories.select_provider(repo)
+        self.repositories.provider = MockRepository()
+
         self.repositories.update_repository(repo)
 
-        self.assertGreater(RepoHistory.query.count(), 5000)
+        self.assertEqual(RepoHistory.query.count(), 1)
 
         packages = self.repositories.get_outdated_packages('ponyexpress', [repo])
 
@@ -97,13 +103,36 @@ class TestRepository(TestServerBase):
         test_importer = PackageImport()
         test_importer.process_node_info(data_install)
 
-        self.repositories.select_provider(repo1)
+        data1 = {'5d8e40ce35ea30f621573d40b17dcd21e3b974f2dd5e096c6c10701af8cdc5d0': {
+                "package": "accountsservice",
+                "filename": "http://us.archive.ubuntu.com/ubuntu/pool/main/a/accountsservice/accountsservice_0.6.15-2ubuntu9_amd64.deb",
+                "description": "query and manipulate user account information",
+                "version": "0.6.15-2ubuntu9",
+                "architecture": "amd64",
+                "sha256": "5d8e40ce35ea30f621573d40b17dcd21e3b974f2dd5e096c6c10701af8cdc5d0"
+            },
+        }
+
+        #self.repositories.select_provider(repo1)
+        self.repositories.provider = MockRepository(data1)
+
         self.repositories.update_repository(repo1)
 
-        self.repositories.select_provider(repo2)
+        data2 = {'2ea5cb960f976935484eff2a2f4f642a991c2af7a88d08b7731dfcd3e3cc3b20': {
+                "package": "accountsservice",
+                "filename": "http://us.archive.ubuntu.com/ubuntu/pool/main/a/accountsservice/accountsservice_0.6.35-0ubuntu7_amd64.deb",
+                "description": "query and manipulate user account information",
+                "version": "0.6.35-0ubuntu7",
+                "architecture": "amd64",
+                "sha256": "2ea5cb960f976935484eff2a2f4f642a991c2af7a88d08b7731dfcd3e3cc3b20"
+            },
+        }
+
+        #self.repositories.select_provider(repo2)
+        self.repositories.provider = MockRepository(data2)
         self.repositories.update_repository(repo2)
 
-        self.assertGreater(RepoHistory.query.count(), 5000)
+        self.assertEqual(RepoHistory.query.count(), 2)
 
         packages = self.repositories.get_outdated_packages('ponyexpress', [repo1, repo2])
 

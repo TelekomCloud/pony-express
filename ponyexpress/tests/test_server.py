@@ -142,7 +142,7 @@ class TestServerBase(unittest.TestCase):
             return None
 
     def updateRepository(self, repo):
-        """A method to add repositories for test purposes"""
+        """A method to update repositories for test purposes"""
 
         handler = Repositories()
 
