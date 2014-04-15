@@ -24,4 +24,4 @@ class Package(db.Model):
 
     @property
     def upstream_version(self):
-        return ''
+        return []

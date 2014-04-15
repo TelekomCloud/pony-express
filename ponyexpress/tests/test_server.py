@@ -7,6 +7,8 @@ from ponyexpress.database import db
 from ponyexpress.api.lib.package_import import PackageImport
 from ponyexpress.api.lib.repositories import Repositories
 
+from ponyexpress.models import Repository
+
 #=================================
 # TODO, we will stub this for now
 #=================================
@@ -130,7 +132,22 @@ class TestServerBase(unittest.TestCase):
         """A method to add repositories for test purposes"""
 
         handler = Repositories()
-        return handler.create_repository( repo_dict )
+        repo_id = handler.create_repository( repo_dict )
+
+        repo = Repository.query.filter_by(id=repo_id).first()
+
+        if repo is not None:
+            return repo
+        else:
+            return None
+
+    def updateRepository(self, repo):
+        """A method to update repositories for test purposes"""
+
+        handler = Repositories()
+
+        handler.select_provider(repo)
+        handler.update_repository(repo)
 
     def process_data(self, filename):
         json_data = open(filename)

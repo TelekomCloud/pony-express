@@ -19,7 +19,7 @@ class PackageHistory(db.Model):
     # date installed
     installed = db.Column(db.DATE)
 
-    upstream_version = ''
+    upstream_version = []
 
     provider = ''
     summary = ''

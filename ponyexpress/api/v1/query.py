@@ -105,31 +105,33 @@ def packages():
     filter = str(request.args.get('filter', ''))
 
     outdated = str(request.args.get('outdated', ''))
-    repo = int(request.args.get('repo', -1))
+    repo = str(request.args.get('repo', ''))
 
     if outdated == '':
         if (10 <= limit <= 100) and page >= 1:
 
             if filter is not None:
                 filter_string = ('%%%s%%' % filter)
-                paginator = Package.query.filter(Node.name.like(filter_string)).order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
-                                                                                            error_out=False)
+                paginator = Package.query.filter(Node.name.like(filter_string)).order_by(Package.name).order_by(
+                    Package.version).paginate(page=page, per_page=limit,
+                                              error_out=False)
             else:
-                paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page, per_page=limit,
-                                                                                            error_out=False)
-    elif outdated != '' and repo > 0:
+                paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page,
+                                                                                                    per_page=limit,
+                                                                                                    error_out=False)
+    elif outdated != '' and repo != '':
         # Repository api lib
-        repositories = Repositories()
+        handler = Repositories()
 
-        # Select repo
-        repo = Repository.query.filter_by(id=repo).first()
+        # Get selected repositories
+        repo_list = handler.get_repositories(repo)
 
         nodes_filter = '%%*%%'
         if filter != '':
             nodes_filter = ('%%%s%%' % filter)
 
-        if repo:
-            outdated_packages = repositories.get_outdated_packages(nodes_filter, repo)
+        if repo_list:
+            outdated_packages = handler.get_outdated_packages(nodes_filter, repo_list)
 
             length = len(outdated_packages)
             paginator = Pagination(page=page, per_page=limit, total_count=length)
@@ -174,6 +176,7 @@ def packages():
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
 
+
 @query.route('/v1/package/<id>', methods=['GET'])
 def package(id):
     if id != '':
@@ -193,18 +196,20 @@ def package(id):
     else:
         raise InvalidAPIUsage('Package not found', 404)
 
-@query.route('/v1/repositories', methods=['GET','POST'])
+
+@query.route('/v1/repositories', methods=['GET', 'POST'])
 def repositories():
     if request.method == 'GET':
         return repository_get()
     elif request.method == 'POST':
         return repository_post()
 
+
 def repository_get():
     result = []
 
     limit = int(request.args.get('limit', 100))
-    page  = int(request.args.get('page',  1))
+    page = int(request.args.get('page', 1))
 
     if (10 <= limit <= 100) and page >= 1:
         #queried_nodes = Node.query.limit(limit).offset(offset)
@@ -215,11 +220,11 @@ def repository_get():
     if paginator:
         for n in paginator.items:
             c = {
-                'id'       : n.id,
-                'name'     : n.name,
-                'uri'      : n.uri,
-                'label'    : n.label,
-                'provider' : n.provider
+                'id': n.id,
+                'name': n.name,
+                'uri': n.uri,
+                'label': n.label,
+                'provider': n.provider
             }
             result.append(c)
 
@@ -228,6 +233,7 @@ def repository_get():
         return Response(json.dumps(result), mimetype='application/json', headers=headers)
     else:
         raise InvalidAPIUsage('Invalid request', 410)
+
 
 def repository_post():
     handler = Repositories()
@@ -239,10 +245,10 @@ def repository_post():
 
     # fill data with all the fields necessary for creating a repository entry
     data = {}
-    data['name']     = str( j['name'] )
-    data['label']    = str( j['label'] )
-    data['uri']      = str( j['uri'] )
-    data['provider'] = str( j['provider'] )
+    data['name'] = str(j['name'])
+    data['label'] = str(j['label'])
+    data['uri'] = str(j['uri'])
+    data['provider'] = str(j['provider'])
 
     # create new new repository
     try:
@@ -264,6 +270,7 @@ def repository_by_id(id):
     elif request.method == 'DELETE':
         return repository_delete(id)
 
+
 def repository_update(id):
     if id != '':
         repo = Repository.query.filter_by(id=id).first()
@@ -279,11 +286,12 @@ def repository_update(id):
         # extract the result for the response
         result = {'id': repo.id, 'name': repo.name, 'uri': repo.uri, 'label': repo.label,
                   'provider': repo.provider
-                  }
+        }
 
         return Response(json.dumps(result), mimetype='application/json')
     else:
-        raise InvalidAPIUsage('Package not found', 404)
+        raise InvalidAPIUsage('Repository not found', 404)
+
 
 def repository_delete(id):
     if id != '':
@@ -300,4 +308,4 @@ def repository_delete(id):
         # return
         return Response('', status=204, mimetype='application/json')
     else:
-        raise InvalidAPIUsage('Package not found', 404)
+        raise InvalidAPIUsage('Repository not found', 404)
