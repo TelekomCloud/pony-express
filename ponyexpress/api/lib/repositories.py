@@ -174,7 +174,7 @@ class Repositories:
         a = self.pattern.split(z)
 
         if a is not None and len(a) > 0:
-            return tuple([str(x) for x in a[0] if x.isnumeric()])
+            return tuple([str(x) for x in a[0] if x.isdigit()])
 
         return None
 
