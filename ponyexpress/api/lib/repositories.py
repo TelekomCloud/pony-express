@@ -169,17 +169,12 @@ class Repositories:
         """Parse debian/ubuntu style version strings and return a tuple containing only numbers"""
 
         if self.pattern is None:
-            #self.pattern = re.compile("([0-9]+)\.([0-9]+)\.?([0-9]*)[\-\+\~]?([0-9]|[\+\-\~a-z0-9]*)[a-z]*([0-9\.]+)")
-            #self.pattern = re.compile("([0-9]+)\.([0-9]+)\.?([0-9]*)[\-\+\~]?([0-9]|[\+\-\~a-z0-9]*)([a-z]*)([0-9]*)([\.0-9]*)")
             self.pattern = re.compile('/(?<=\d)(?=\D)|(?<=\D)(?=\d)/')
 
         a = self.pattern.split(z)
 
         if a is not None and len(a) > 0:
             return tuple([str(x) for x in a[0] if x.isnumeric()])
-
-        # TODO: fallback, simply return not-equal!!
-        #tup = tuple([str(x) for x in z.split('.')])
 
         return None
 
