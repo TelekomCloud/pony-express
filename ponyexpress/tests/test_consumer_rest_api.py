@@ -4,10 +4,11 @@ from nose.tools import *
 
 from .test_server import *
 
+from ponyexpress.api.lib.providers import MockRepository
 
 class BasicTestCaseV1(TestServerBase):
 
-    def prepare_repo_data(self):
+    def prepare_repo_data(self, packagedata=None):
         # create the demo repo
         data = {}
         data['name'] = 'Repo1'
@@ -16,8 +17,9 @@ class BasicTestCaseV1(TestServerBase):
         data['provider'] = 'apt'
 
         repo = self.addRepository(data)
+        provider = MockRepository(packagedata)
 
-        self.updateRepository(repo)
+        self.updateRepository(repo, provider)
 
     def content_type_must_eq(self, response, t):
         self.assertEqual(response.headers['Content-Type'], t)
@@ -98,20 +100,46 @@ class BasicTestCaseV1(TestServerBase):
         eq_(j[0]["versions"][0]["id"], p["sha256"])
 
     def testRequestPackagesWithMultipleRepos(self):
-        self.addNode(self.DATA2)
-        self.addNode(self.DATA3)
+        self.addNode(self.DATA1)
 
-        self.prepare_repo_data()
+        data = {'29ed26cf3b18b0d9988be08da9086f180f3f01fb': {
+                "package": "openstack-deploy",
+                "filename": "http://repo/pool/main/o/openstack-deploy/openstack-deploy.deb",
+                "description": "query and manipulate user account information",
+                "version": "2.0",
+                "architecture": "amd64",
+                "sha256": "29ed26cf3b18b0d9988be08da9086f180f3f01fb"
+            },
+        }
 
-        ##
-        p = self.DATA2['packages'][0]
+        self.prepare_repo_data(data)
+
         j = self.get_json('/v1/packages?outdated=true&repo=1,2')
         self.assertIsInstance(j, list)
 
-        #eq_(j[0]["name"], p["name"])
-        #eq_(type(j[0]["versions"]), list)
-        #eq_(len(j[0]["versions"]), 2)
-        #eq_(j[0]["versions"][0]["id"], p["sha256"])
+        self.assertIsInstance(j[0]['versions'], list)
+        self.assertEqual(j[0]["upstream"][0], '2.0')
+
+    def testRequestPackagesWithLabel(self):
+        self.addNode(self.DATA1)
+
+        data = {'29ed26cf3b18b0d9988be08da9086f180f3f01fc': {
+                "package": "openstack-deploy",
+                "filename": "http://repo/pool/main/o/openstack-deploy/openstack-deploy.deb",
+                "description": "query and manipulate user account information",
+                "version": "2.0",
+                "architecture": "amd64",
+                "sha256": "29ed26cf3b18b0d9988be08da9086f180f3f01fc"
+            },
+        }
+
+        self.prepare_repo_data(data)
+
+        j = self.get_json('/v1/packages?outdated=true&repolabel=main')
+        self.assertIsInstance(j, list)
+
+        self.assertIsInstance(j[0]['versions'], list)
+        self.assertEqual(j[0]["upstream"][0], '2.0')
 
     def testRequestPackageInfo(self):
         self.addNode(self.DATA2)

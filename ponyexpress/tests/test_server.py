@@ -141,12 +141,16 @@ class TestServerBase(unittest.TestCase):
         else:
             return None
 
-    def updateRepository(self, repo):
+    def updateRepository(self, repo, provider=None):
         """A method to update repositories for test purposes"""
 
         handler = Repositories()
 
-        handler.select_provider(repo)
+        if provider is None:
+            handler.select_provider(repo)
+        else:
+            handler.provider = provider
+
         handler.update_repository(repo)
 
     def process_data(self, filename):

@@ -90,49 +90,44 @@ class Repositories:
             return []
 
         # get packages from selected nodes
-        node_filter_expression = ('%%%s%%' % node_filter)
+        if node_filter != '':
+            node_filter_expression = ('%%%s%%' % node_filter)
 
-        packages_history = PackageHistory.query.filter(PackageHistory.nodename.like(node_filter_expression)).all()
-
-        # get packages from selected set of repositories, filter by label
-        #repo_list = self.get_repositories(repository)
+            packages_history = PackageHistory.query.filter(PackageHistory.nodename.like(node_filter_expression)).all()
+        else:
+            packages_history = PackageHistory.query.all()
 
         if packages_history is not None:
-
             for package in packages_history:
-                try:
-                    if repo_list is not []:
-                        rl = []
-                        for repo in repo_list:
-                            rl.append(repo.id)
+                #try:
+                if repo_list is not []:
+                    rl = []
+                    for repo in repo_list:
+                        rl.append(repo.id)
 
-                        mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname) \
-                                              .filter(RepoHistory.repo_id.in_(rl)).all()
+                    mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname) \
+                                          .filter(RepoHistory.repo_id.in_(rl)).all()
 
-                        #TODO check if multiple packages should be returned.
-                        #TODO iterate of all packages we can find with that name
-                        #
+                    if mp is not None:
+                        upstream_version = []
+                        for p in mp:
+                            # compare versions
+                            res = self.ver_cmp(package.pkgversion, p.pkgversion)
 
-                        if mp is not None:
-                            upstream_version = []
-                            for p in mp:
-                                # compare versions
-                                res = self.ver_cmp(package.pkgversion, p.pkgversion)
+                            if res < 0:
+                                # repository is newer
+                                upstream_version.append(p.pkgversion)
 
-                                if res < 0:
-                                    # repository is newer
-                                    upstream_version.append(p.pkgversion)
+                        package.upstream_version = upstream_version
 
-                            package.upstream_version = upstream_version
-
-                            if package.pkgname not in outdated_packages:
-                                outdated_packages[package.pkgname] = package
-                    else:
-                        return []
-                except Exception as e:
-                    # Catch exceptions and move on to the next object
-                    print(e)
-                    #next()
+                        if package.pkgname not in outdated_packages:
+                            outdated_packages[package.pkgname] = package
+                else:
+                    return []
+                #except Exception as e:
+                #    # Catch exceptions and move on to the next object
+                #    print(e)
+                #    #next()
 
             return list(outdated_packages.values())
         else:
@@ -164,6 +159,16 @@ class Repositories:
                     repo_list = repos
 
         return repo_list
+
+    def get_repositories_by_label(self, label):
+        #check if expression is an integer or a comma separated list of values
+
+        if label is not None and label != '':
+            repo_list = Repository.query.filter_by(label=label).all()
+            if repo_list is not None:
+                return repo_list
+
+        return []
 
     def _ver_tuple(self, z):
         """Parse debian/ubuntu style version strings and return a tuple containing only numbers"""
