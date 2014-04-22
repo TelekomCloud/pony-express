@@ -99,7 +99,6 @@ class Repositories:
 
         if packages_history is not None:
             for package in packages_history:
-                #try:
                 if repo_list is not []:
                     rl = []
                     for repo in repo_list:
@@ -124,10 +123,6 @@ class Repositories:
                             outdated_packages[package.pkgname] = package
                 else:
                     return []
-                #except Exception as e:
-                #    # Catch exceptions and move on to the next object
-                #    print(e)
-                #    #next()
 
             return list(outdated_packages.values())
         else:

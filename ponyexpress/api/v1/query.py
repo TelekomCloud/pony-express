@@ -148,9 +148,6 @@ def packages():
     if paginator:
         for p in paginator.items:
 
-            #if type(p) is PackageHistory:
-            #    p = p.to_package()
-
             l = len(result)
             index = ((l - 1), 0)[0 > (l - 1)]
 
