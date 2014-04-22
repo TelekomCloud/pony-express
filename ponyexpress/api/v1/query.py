@@ -106,6 +106,7 @@ def packages():
 
     outdated = str(request.args.get('outdated', ''))
     repo = str(request.args.get('repo', ''))
+    label = str(request.args.get('repolabel', ''))
 
     if outdated == '':
         if (10 <= limit <= 100) and page >= 1:
@@ -119,14 +120,17 @@ def packages():
                 paginator = Package.query.order_by(Package.name).order_by(Package.version).paginate(page=page,
                                                                                                     per_page=limit,
                                                                                                     error_out=False)
-    elif outdated != '' and repo != '':
+    elif outdated != '' and (repo != '' or label != ''):
         # Repository api lib
         handler = Repositories()
 
         # Get selected repositories
-        repo_list = handler.get_repositories(repo)
+        if repo != '' and label == '':
+            repo_list = handler.get_repositories(repo)
+        elif label != '' and repo == '':
+            repo_list = handler.get_repositories_by_label(label)
 
-        nodes_filter = '%%*%%'
+        nodes_filter = ''
         if filter != '':
             nodes_filter = ('%%%s%%' % filter)
 
@@ -143,9 +147,6 @@ def packages():
 
     if paginator:
         for p in paginator.items:
-
-            #if type(p) is PackageHistory:
-            #    p = p.to_package()
 
             l = len(result)
             index = ((l - 1), 0)[0 > (l - 1)]

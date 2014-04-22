@@ -225,6 +225,37 @@ class TestRepository(TestServerBase):
         self.assertIsInstance(repo_list, list)
         self.assertEqual(repo_list[0].id, repo_id)
 
+    def test_get_repositories_by_label(self):
+        self.repositories = Repositories()
+
+        # create the demo repo
+        data = {}
+        data['name'] = 'Repo1'
+        data['label'] = 'main'
+        data['uri'] = 'http://www.software.repo'
+        data['provider'] = 'apt'
+        repo_id = self.repositories.create_repository(data)
+
+        data = {}
+        data['name'] = 'Repo2'
+        data['label'] = 'main'
+        data['uri'] = 'http://www.software.repo'
+        data['provider'] = 'apt'
+        repo_id = self.repositories.create_repository(data)
+
+        data = {}
+        data['name'] = 'Repo3'
+        data['label'] = 'mirror'
+        data['uri'] = 'http://mirror.repo'
+        data['provider'] = 'apt'
+        repo_id = self.repositories.create_repository(data)
+
+        repo_list = self.repositories.get_repositories_by_label('main')
+
+        self.assertIsInstance(repo_list, list)
+        self.assertEqual(len(repo_list), 2)
+        self.assertEqual(repo_list[0].name, 'Repo1')
+
 if __name__ == '__main__':
     unittest.main()
 
