@@ -11,7 +11,6 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 import json
 import yaml
-import pprint
 
 from ponyexpress import create_app
 from ponyexpress.database import db
@@ -79,7 +78,6 @@ def import_repository(filename):
         if repoyaml is not None:
             for repositories in repoyaml:
                 for repo in repositories['repositories']:
-                    pprint.pprint(repo)
 
                     new_repo = Repository()
                     new_repo.provider = repo['provider']
