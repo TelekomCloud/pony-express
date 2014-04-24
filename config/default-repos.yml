@@ -1,0 +1,9 @@
+repositories:
+  - name: Ubuntu
+    url: http://http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz
+    label: ubuntu
+    provider: apt
+  - name: Cloud
+    url: http://http://ubuntu-cloud.archive.canonical.com/ubuntu/dists/precise-proposed/icehouse/main/binary-amd64/Packages.gz
+    label: mirror
+    provider: apt

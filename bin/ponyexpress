@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # ponyexpress
-import os.path
+import os
 import sys
 
 sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..'))
@@ -10,6 +10,8 @@ from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 
 import json
+import yaml
+import pprint
 
 from ponyexpress import create_app
 from ponyexpress.database import db
@@ -58,6 +60,35 @@ def import_testdata():
 
         repositories.select_provider(repo)
         repositories.update_repository(repo)
+
+@manager.command
+def import_repository(filename):
+
+    #
+    path = os.path.abspath(filename)
+    if not os.path.exists(path):
+        print("error")
+
+    #
+    with app.app_context():
+        repositories = Repositories()
+
+        stream = open(path, 'r')
+        repoyaml = yaml.safe_load_all(stream)
+
+        if repoyaml is not None:
+            for repositories in repoyaml:
+                for repo in repositories['repositories']:
+                    pprint.pprint(repo)
+
+                    new_repo = Repository()
+                    new_repo.provider = repo['provider']
+                    new_repo.name = repo['name']
+                    new_repo.uri = repo['url']
+                    new_repo.label = repo['label']
+
+                    db.session.add(new_repo)
+                    db.session.commit()
 
 if __name__ == "__main__":
     manager.run()
