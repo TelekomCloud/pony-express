@@ -15,22 +15,33 @@ def repository_update():
 
     # Safeguard
     if request.method == 'POST':
-        repo = str(request.args.get('repo', ''))
-        label = str(request.args.get('repolabel', ''))
+        repo = ''
+        label = ''
+
+        request_json = request.get_json()
+
+        if request_json is not None:
+            repo = request_json.get('repolist')
+            label = request_json.get('repolabel')
+        else:
+            raise InvalidAPIUsage('No JSON data', 410)
 
         # Repository api lib
         handler = Repositories()
 
-        if repo != '' and label == '':
+        if repo is not None and label is None:
             repo_list = handler.get_repositories(repo)
-        elif label != '' and repo :
+        elif label is not None and repo is None:
             repo_list = handler.get_repositories_by_label(label)
         else:
             raise InvalidAPIUsage('Invalid request', 410)
 
         if repo_list is not None:
             for repo in repo_list:
+                handler.select_provider(repo)
                 handler.update_repository(repo)
+        else:
+            print('NO REPOS')
 
         #TODO: return node object?
         return Response(status=200)

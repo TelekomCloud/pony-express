@@ -65,15 +65,16 @@ class AptRepository(Provider):
 
     def _parse_metadata(self, package_metadata):
         # split line into key => value pair
-        k, v = package_metadata.split(':', 1)
+        try:
+            k, v = package_metadata.split(':', 1)
 
-        v = v.rstrip('\n').lstrip()
-        k = k.rstrip('\n').lstrip()
+            v = v.rstrip('\n').lstrip()
+            k = k.rstrip('\n').lstrip()
 
-        # Check if key => value is required
-        if k in self._key_list:
-            return k.lower(), v
+            # Check if key => value is required
+            if k in self._key_list:
+                return k.lower(), v
+        except ValueError:
+            return None, None
 
         return None, None
-
-
