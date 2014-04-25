@@ -81,6 +81,10 @@ class Repositories:
                 db.session.add(hist)
             db.session.commit()
 
+            return len(mvals)
+        else:
+            return None
+
     def get_outdated_packages(self, node_filter, repo_list):
         """Compare packages available on the repository server with those available on a set of nodes"""
 

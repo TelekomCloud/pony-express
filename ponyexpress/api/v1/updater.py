@@ -1,4 +1,4 @@
-from flask import Blueprint, request, Response
+from flask import Blueprint, request, Response, json
 from ponyexpress.api.exceptions import *
 
 from ponyexpress.api.lib.repositories import Repositories
@@ -15,9 +15,6 @@ def repository_update():
 
     # Safeguard
     if request.method == 'POST':
-        repo = ''
-        label = ''
-
         request_json = request.get_json()
 
         if request_json is not None:
@@ -36,15 +33,20 @@ def repository_update():
         else:
             raise InvalidAPIUsage('Invalid request', 410)
 
+        # Return list of updated repositories
+        resp = []
+
         if repo_list is not None:
             for repo in repo_list:
                 handler.select_provider(repo)
-                handler.update_repository(repo)
-        else:
-            print('NO REPOS')
+                ret = handler.update_repository(repo)
 
-        #TODO: return node object?
-        return Response(status=200)
+                if ret is not None and ret > 0:
+                    resp.append(repo.name)
+        else:
+            raise InvalidAPIUsage('No repositories configured', status_code=400)
+
+        return Response(json.dumps({'repositories': resp}), status=200)
     else:
         raise InvalidAPIUsage('Invalid request method', status_code=400)
 
