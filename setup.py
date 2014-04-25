@@ -21,7 +21,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), "r") as f:
 
 setup(
     name="ponyexpress",
-    version="0.6",
+    version="0.6.5b1",
     packages=find_packages(where='.'),
     package_data={
         'ponyexpress': [
@@ -39,6 +39,7 @@ setup(
         'flask-sqlalchemy',
         'flask-migrate',
         'requests',
+        'pyyaml',
         'setuptools',
         'nose',
     ],
