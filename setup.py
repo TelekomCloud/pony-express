@@ -40,6 +40,7 @@ setup(
         'flask-migrate',
         'requests',
         'setuptools',
+        'pyyaml',
         'nose',
     ],
     test_suite='nose.collector',

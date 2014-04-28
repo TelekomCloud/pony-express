@@ -1,4 +1,5 @@
 import os
+import io
 
 from .test_server import *
 
@@ -255,6 +256,28 @@ class TestRepository(TestServerBase):
         self.assertIsInstance(repo_list, list)
         self.assertEqual(len(repo_list), 2)
         self.assertEqual(repo_list[0].name, 'Repo1')
+
+    def test_load_config(self):
+        yml = u"""
+        repositories:
+          - name: Ubuntu
+            url: http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz
+            label: ubuntu
+            provider: apt
+          - name: Cloud
+            url: http://ubuntu-cloud.archive.canonical.com/ubuntu/dists/precise-proposed/icehouse/main/binary-amd64/Packages.gz
+            label: mirror
+            provider: apt
+        """
+
+        config = io.StringIO(initial_value=yml)
+
+        repoyaml = Repositories.load_config(stream=config)
+
+        self.assertIsNotNone(repoyaml)
+        self.assertIsInstance(repoyaml, list)
+
+        self.assertEqual(len(repoyaml), 2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
 # ponyexpress
-import os.path
+import os
 import sys
+import json
 
 sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..'))
 
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
-
-import json
 
 from ponyexpress import create_app
 from ponyexpress.database import db
@@ -31,7 +30,8 @@ migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 
 @manager.command
-def import_testdata():
+def developermode():
+    """Create a set of basic test data. Useful for testing"""
 
     with app.app_context():
         db.create_all()
@@ -58,6 +58,28 @@ def import_testdata():
 
         repositories.select_provider(repo)
         repositories.update_repository(repo)
+
+@manager.command
+def import_repository(filename):
+    """Import a predefined set of package repositories from a YAML file"""
+
+    # load raw YAML repository configuration
+    repoyaml = Repositories.load_config(filename)
+
+    # add loaded repositories to the database
+    with app.app_context():
+        if repoyaml is not None:
+            for repo in repoyaml:
+                new_repo = Repository()
+                new_repo.provider = repo['provider']
+                new_repo.name = repo['name']
+                new_repo.uri = repo['url']
+                new_repo.label = repo['label']
+
+                db.session.add(new_repo)
+            db.session.commit()
+
+            print("Imported %d repositories" % len(repoyaml))
 
 if __name__ == "__main__":
     manager.run()

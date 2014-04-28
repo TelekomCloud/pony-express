@@ -1,6 +1,8 @@
 ## Handle configured repositores and query for outdated package data
 from datetime import date
 import re
+import os
+import yaml
 
 from ponyexpress.database import db
 from ponyexpress.api.lib.providers import *
@@ -194,3 +196,25 @@ class Repositories:
             return 0
         elif va > vb:
             return 1
+
+    @staticmethod
+    def load_config(filename='', stream=None):
+        repoyaml = []
+
+        if str(filename) != '' and stream is None:
+            path = os.path.abspath(filename)
+            if not os.path.exists(path):
+                return None
+
+            stream = open(path, 'r')
+
+        if stream is not None:
+            yml = yaml.safe_load_all(stream)
+
+            for repositories in yml:
+                for repo in repositories['repositories']:
+                    repoyaml.append(repo)
+
+            return repoyaml
+        else:
+            return None
