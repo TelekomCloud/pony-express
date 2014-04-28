@@ -129,6 +129,8 @@ def packages():
             repo_list = handler.get_repositories(repo)
         elif label != '' and repo == '':
             repo_list = handler.get_repositories_by_label(label)
+        else:
+            raise InvalidAPIUsage('Invalid request', 410)
 
         nodes_filter = ''
         if filter != '':

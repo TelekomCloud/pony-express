@@ -69,17 +69,15 @@ class Repositories:
             raise Exception()
 
         if metadata is not None:
-
-            try:
-                mvals = metadata.itervalues()
-            except:
-                mvals = metadata.values()
-
-            for m in mvals:
+            for m in metadata.values():
                 hist = RepoHistory(repository, m['sha256'], m['package'], m['version'], m['filename'], date.today())
 
                 db.session.add(hist)
             db.session.commit()
+
+            return len(metadata.values())
+        else:
+            return None
 
     def get_outdated_packages(self, node_filter, repo_list):
         """Compare packages available on the repository server with those available on a set of nodes"""

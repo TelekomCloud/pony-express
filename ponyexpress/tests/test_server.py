@@ -88,7 +88,7 @@ class TestServerBase(unittest.TestCase):
     REPO1 = {
         "name": "Magus Repository",
         "label": "live",
-        "uri": "http://archive.canonical.com/ubuntu/dists/maverick/partner/i386/binary-i386/Packages.gz",
+        "uri": "http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz",
         "provider": "apt"
     }
 
