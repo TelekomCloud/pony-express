@@ -258,7 +258,7 @@ class TestRepository(TestServerBase):
         self.assertEqual(repo_list[0].name, 'Repo1')
 
     def test_load_config(self):
-        yml = """
+        yml = u"""
         repositories:
           - name: Ubuntu
             url: http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz
