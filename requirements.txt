@@ -5,6 +5,5 @@ flask-script>=0.6.3
 flask-sqlalchemy>=1.0
 flask-migrate>=0.1.4
 requests>=2.0.0
-pyyaml
 setuptools
 nose

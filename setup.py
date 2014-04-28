@@ -39,7 +39,6 @@ setup(
         'flask-sqlalchemy',
         'flask-migrate',
         'requests',
-        'pyyaml',
         'setuptools',
         'nose',
     ],
