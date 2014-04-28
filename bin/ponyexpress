@@ -63,12 +63,10 @@ def developermode():
 def import_repository(filename):
     """Import a predefined set of package repositories from a YAML file"""
 
-    #
-    #repositories = Repositories()
-
+    # load raw YAML repository configuration
     repoyaml = Repositories.load_config(filename)
 
-    #
+    # add loaded repositories to the database
     with app.app_context():
         if repoyaml is not None:
             for repo in repoyaml:
