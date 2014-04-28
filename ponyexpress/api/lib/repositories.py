@@ -200,23 +200,23 @@ class Repositories:
             return 1
 
     @staticmethod
-    def load_config(filename):
-
+    def load_config(filename='', stream=None):
         repoyaml = []
 
-        if str(filename) != '':
+        if str(filename) != '' and stream is None:
             path = os.path.abspath(filename)
             if not os.path.exists(path):
                 return None
 
             stream = open(path, 'r')
-            if stream:
-                yml = yaml.safe_load_all(stream)
 
-                for repositories in yml:
-                    for repo in repositories['repositories']:
-                        repoyaml.append(repo)
+        if stream is not None:
+            yml = yaml.safe_load_all(stream)
 
-                return repoyaml
-            else:
-                return None
+            for repositories in yml:
+                for repo in repositories['repositories']:
+                    repoyaml.append(repo)
+
+            return repoyaml
+        else:
+            return None
