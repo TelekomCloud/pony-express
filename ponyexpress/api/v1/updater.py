@@ -43,10 +43,11 @@ def repository_update():
 
                 if ret is not None and ret > 0:
                     resp.append(repo.name)
+
+            return Response(json.dumps({'repositories': resp}), status=200, mimetype='application/json')
         else:
             raise InvalidAPIUsage('No repositories configured', status_code=400)
 
-        return Response(json.dumps({'repositories': resp}), status=200)
     else:
         raise InvalidAPIUsage('Invalid request method', status_code=400)
 

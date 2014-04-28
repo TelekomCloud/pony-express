@@ -217,3 +217,18 @@ class BasicTestCaseV1(TestServerBase):
         id = self.addRepository(self.REPO1)
         # send the request to remove this repository
         j = self.request_json('/v1/repositories/'+str(id.id), 'delete', status_code = 204)
+
+    def testUpdateRepositoryMetadata(self):
+        id = self.addRepository(self.REPO1)
+        m = self.REPO1
+
+        # create a new random label
+        repo_data = {
+            "repolist": id.id
+        }
+
+        # send the request to update this repository with the new data
+        j = self.request_json('/v1/updater', 'post', data=repo_data, status_code=200)
+
+        # check if the response of this update has the new data
+        self.assertEqual(j["repositories"][0], m['name'])
