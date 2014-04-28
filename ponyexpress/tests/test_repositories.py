@@ -256,6 +256,14 @@ class TestRepository(TestServerBase):
         self.assertEqual(len(repo_list), 2)
         self.assertEqual(repo_list[0].name, 'Repo1')
 
+    def test_load_config(self):
+        repoyaml = Repositories.load_config('../../config/default-repos.yml')
+
+        self.assertIsNotNone(repoyaml)
+        self.assertIsInstance(repoyaml, list)
+
+        self.assertEqual(len(repoyaml), 2)
+
 if __name__ == '__main__':
     unittest.main()
 

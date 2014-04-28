@@ -4,7 +4,6 @@
 import os
 import sys
 import json
-import yaml
 
 sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), '..'))
 
@@ -65,29 +64,24 @@ def import_repository(filename):
     """Import a predefined set of package repositories from a YAML file"""
 
     #
-    path = os.path.abspath(filename)
-    if not os.path.exists(path):
-        print("error")
+    #repositories = Repositories()
+
+    repoyaml = Repositories.load_config(filename)
 
     #
     with app.app_context():
-        repositories = Repositories()
-
-        stream = open(path, 'r')
-        repoyaml = yaml.safe_load_all(stream)
-
         if repoyaml is not None:
-            for repositories in repoyaml:
-                for repo in repositories['repositories']:
+            for repo in repoyaml:
+                new_repo = Repository()
+                new_repo.provider = repo['provider']
+                new_repo.name = repo['name']
+                new_repo.uri = repo['url']
+                new_repo.label = repo['label']
 
-                    new_repo = Repository()
-                    new_repo.provider = repo['provider']
-                    new_repo.name = repo['name']
-                    new_repo.uri = repo['url']
-                    new_repo.label = repo['label']
+                db.session.add(new_repo)
+            db.session.commit()
 
-                    db.session.add(new_repo)
-                    db.session.commit()
+            print("Imported %d repositories" % len(repoyaml))
 
 if __name__ == "__main__":
     manager.run()
