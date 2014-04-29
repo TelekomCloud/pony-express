@@ -1,3 +1,13 @@
+ponyexpress (0.6.5b1-1) precise; urgency=low
+
+  * [ Christoph Kassen ]
+    - Show outdated packages
+    - Track upstream repository changes
+    - Track package installation history
+    - Add repository configuration importer
+
+ -- Christoph Kassen <c.kassen@telekom.de>  Thu, 29 Apr 2014 10:21:36 +0100
+
 ponyexpress (0.6-1) precise; urgency=low
 
   * [ Christoph Kassen ]
