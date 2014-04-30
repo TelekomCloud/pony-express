@@ -160,8 +160,19 @@ class Repositories:
 
         if label is not None and label != '':
             repo_list = Repository.query.filter_by(label=label).all()
+
             if repo_list is not None:
                 return repo_list
+
+        return []
+
+    def get_all_repositories(self):
+        #check if expression is an integer or a comma separated list of values
+
+        repo_list = Repository.query.all()
+
+        if repo_list is not None:
+            return repo_list
 
         return []
 

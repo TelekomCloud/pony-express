@@ -5,9 +5,11 @@ from ponyexpress.api.lib.repositories import Repositories
 
 updater = Blueprint('updater', __name__)
 
+
 @updater.route('/v1/updater')
 def default():
     raise InvalidAPIUsage('Invalid request method', status_code=400)
+
 
 @updater.route('/v1/updater', methods=['POST'])
 def repository_update():
@@ -17,11 +19,12 @@ def repository_update():
     if request.method == 'POST':
         request_json = request.get_json()
 
+        repo = None
+        label = None
+
         if request_json is not None:
             repo = request_json.get('repolist')
             label = request_json.get('repolabel')
-        else:
-            raise InvalidAPIUsage('No JSON data', 410)
 
         # Repository api lib
         handler = Repositories()
@@ -31,7 +34,7 @@ def repository_update():
         elif label is not None and repo is None:
             repo_list = handler.get_repositories_by_label(label)
         else:
-            raise InvalidAPIUsage('Invalid request', 410)
+            repo_list = handler.get_all_repositories()
 
         # Return list of updated repositories
         resp = []
