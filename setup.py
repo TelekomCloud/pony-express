@@ -21,7 +21,7 @@ with open(os.path.join(os.path.dirname(__file__), "README.md"), "r") as f:
 
 setup(
     name="ponyexpress",
-    version="0.6.5b2",
+    version="0.7",
     packages=find_packages(where='.'),
     package_data={
         'ponyexpress': [
@@ -31,7 +31,7 @@ setup(
         ],
         '': ['README.md', 'LICENSE']
     },
-    data_files=[('/etc/pony-express', ['config/ponyexpress.cfg'])],
+    data_files=[('/etc/pony-express', ['config/ponyexpress.cfg', 'config/default-repos.yml.sample'])],
     scripts=['bin/ponyexpress'],
     install_requires=[
         'flask',

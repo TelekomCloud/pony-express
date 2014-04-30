@@ -1,3 +1,11 @@
+ponyexpress (0.7-1) precise; urgency=low
+
+  * [ Christoph Kassen ]
+    - Release Ponyexpress version 0.7
+    - Bump version number
+
+ -- Christoph Kassen <c.kassen@telekom.de>  Thu, 30 Apr 2014 16:41:43 +0100
+
 ponyexpress (0.6.5b2-1) precise; urgency=low
 
   * [ Christoph Kassen ]
