@@ -232,3 +232,13 @@ class BasicTestCaseV1(TestServerBase):
 
         # check if the response of this update has the new data
         self.assertEqual(j["repositories"][0], m['name'])
+
+    def testUpdateRepositoryMetadataLabel(self):
+        id = self.addRepository(self.REPO1)
+        m = self.REPO1
+
+        # send the request to update this repository with the new data
+        j = self.request_json('/v1/updater', 'post', status_code=200)
+
+        # check if the response of this update has the new data
+        self.assertEqual(j["repositories"][0], m['name'])

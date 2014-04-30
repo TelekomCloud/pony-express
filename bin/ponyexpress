@@ -21,7 +21,14 @@ from ponyexpress.models.repository import Repository
 ##
 # Create ponyexpress app object
 ##
-app = create_app()
+
+
+if os.environ.get('PONY_DEVELOP'):
+    envir = 'ponyexpress.config.configuration.DevelopmentConfig'
+else:
+    envir = 'ponyexpress.config.configuration.DefaultConfig'
+
+app = create_app(envir)
 
 manager = Manager(app)
 

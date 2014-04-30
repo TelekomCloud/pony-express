@@ -97,7 +97,7 @@ class TestServerBase(unittest.TestCase):
         Set test environment and load test config
         """
 
-        app = create_app()
+        app = create_app(environment='ponyexpress.config.configuration.TestingConfig')
 
         app.config['TESTING'] = True
         app.config.from_object('ponyexpress.config.configuration.TestingConfig')
