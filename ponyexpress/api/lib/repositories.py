@@ -9,7 +9,7 @@ from ponyexpress.api.lib.providers import *
 from ponyexpress.models.repository import Repository
 from ponyexpress.models.repo_history import RepoHistory
 from ponyexpress.models.package_history import PackageHistory
-
+import collections
 
 class Repositories:
     provider = None
@@ -84,7 +84,7 @@ class Repositories:
     def get_outdated_packages(self, node_filter, repo_list):
         """Compare packages available on the repository server with those available on a set of nodes"""
 
-        outdated_packages = {}
+        outdated_packages = collections.OrderedDict()
 
         if not isinstance(repo_list, list):
             return []
@@ -93,17 +93,19 @@ class Repositories:
         if node_filter != '':
             node_filter_expression = ('%%%s%%' % node_filter)
 
-            packages_history = PackageHistory.query.filter(PackageHistory.nodename.like(node_filter_expression)).all()
+            packages_history = PackageHistory.query.filter(PackageHistory.nodename.like(node_filter_expression)).\
+                order_by(PackageHistory.pkgname).all()
         else:
-            packages_history = PackageHistory.query.all()
+            packages_history = PackageHistory.query.order_by(PackageHistory.pkgname).all()
+
+        if repo_list is not []:
+            rl = []
+            for repo in repo_list:
+                rl.append(repo.id)
 
         if packages_history is not None:
             for package in packages_history:
-                if repo_list is not []:
-                    rl = []
-                    for repo in repo_list:
-                        rl.append(repo.id)
-
+                if len(rl) > 0:
                     mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname) \
                                           .filter(RepoHistory.repo_id.in_(rl)).all()
 

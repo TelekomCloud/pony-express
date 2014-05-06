@@ -7,34 +7,11 @@ from ponyexpress.api.exceptions import *
 
 from ponyexpress.api.lib.helpers import Pagination
 
+from werkzeug.contrib.cache import SimpleCache
+
+cache = SimpleCache()
+
 query = Blueprint('query', __name__)
-
-
-def hypermedia_headers(uri, page, paginator):
-    #add pagination headers
-    link = []
-
-    if paginator.has_next:
-        url = '<%s?page=%s&limit=%s>; rel="next"' % (uri, paginator.next_num, paginator.per_page)
-        link.append(url)
-
-    if paginator.has_prev:
-        url = '<%s?page=%s&limit=%s>; rel="prev"' % (uri, paginator.prev_num, paginator.per_page)
-        link.append(url)
-
-    if page < paginator.pages:
-        url = '<%s?page=%s&limit=%s>; rel="last"' % (uri, paginator.pages, paginator.per_page)
-        link.append(url)
-
-    if page > 1 and paginator.pages > 1:
-        url = '<%s?page=%s&limit=%s>; rel="first"' % (uri, 1, paginator.per_page)
-        link.append(url)
-
-    headers = {
-        'Link': ','.join(link)
-    }
-
-    return headers
 
 
 @query.route('/v1/nodes', methods=['GET'])
@@ -45,7 +22,6 @@ def nodes():
     page = int(request.args.get('page', 1))
 
     if (10 <= limit <= 100) and page >= 1:
-        #queried_nodes = Node.query.limit(limit).offset(offset)
         paginator = Node.query.paginate(page=page, per_page=limit, error_out=False)
     else:
         raise InvalidAPIUsage('Invalid request', 410)
@@ -58,9 +34,7 @@ def nodes():
             }
             result.append(res)
 
-        headers = hypermedia_headers(request.base_url, page, paginator)
-
-        return Response(json.dumps(result), mimetype='application/json', headers=headers)
+        return Response(json.dumps(result), mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
@@ -88,7 +62,8 @@ def node(fqdn):
                 }
                 r_node['packages'].append(r_p)
 
-            return Response(json.dumps(r_node), mimetype='application/json')
+            return Response(json.dumps(r_node), mimetype='application/json',
+                            headers={'Access-Control-Allow-Origin': '*'})
         else:
             raise InvalidAPIUsage('Invalid API usage', 410)
 
@@ -137,11 +112,24 @@ def packages():
             nodes_filter = ('%%%s%%' % filter)
 
         if repo_list:
-            outdated_packages = handler.get_outdated_packages(nodes_filter, repo_list)
+            outdated_packages_cache = cache.get('outdated_package_cache')
+
+            if outdated_packages_cache is not None \
+                    and outdated_packages_cache['repolist'] == ','.join(str(repo_list)) \
+                    and outdated_packages_cache['nodefilter'] == nodes_filter:
+
+                outdated_packages = outdated_packages_cache['cache']
+            else:
+                outdated_packages = handler.get_outdated_packages(nodes_filter, repo_list)
+
+                outdated_package_cache = {'cache': outdated_packages, 'repolist': ','.join(str(repo_list)),
+                                          'nodefilter': nodes_filter}
+
+                cache.set('outdated_package_cache', outdated_package_cache, timeout=60)
 
             length = len(outdated_packages)
             paginator = Pagination(page=page, per_page=limit, total_count=length)
-            paginator.items = outdated_packages
+            paginator.obj_items = outdated_packages
         else:
             paginator = None
     else:
@@ -172,10 +160,7 @@ def packages():
 
                 result.append(r_p)
 
-        #add pagination headers
-        headers = hypermedia_headers(request.base_url, page, paginator)
-
-        return Response(json.dumps(result), mimetype='application/json', headers=headers)
+        return Response(json.dumps(result), mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})
     else:
         raise InvalidAPIUsage('Invalid API usage', 410)
 
@@ -195,7 +180,7 @@ def package(id):
         for n in package.nodes:
             result['nodes'].append({'id': n.name})
 
-        return Response(json.dumps(result), mimetype='application/json')
+        return Response(json.dumps(result), mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})
     else:
         raise InvalidAPIUsage('Package not found', 404)
 
@@ -231,9 +216,7 @@ def repository_get():
             }
             result.append(c)
 
-        headers = hypermedia_headers(request.base_url, page, paginator)
-
-        return Response(json.dumps(result), mimetype='application/json', headers=headers)
+        return Response(json.dumps(result), mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})
     else:
         raise InvalidAPIUsage('Invalid request', 410)
 
@@ -261,7 +244,8 @@ def repository_post():
         data['id'] = id
 
         # return the object
-        return Response(json.dumps(data), status=201, mimetype='application/json')
+        return Response(json.dumps(data), status=201, mimetype='application/json',
+                        headers={'Access-Control-Allow-Origin': '*'})
     except:
         raise InvalidAPIUsage('Failed to create new repository', 404)
 
@@ -291,7 +275,7 @@ def repository_update(id):
                   'provider': repo.provider
         }
 
-        return Response(json.dumps(result), mimetype='application/json')
+        return Response(json.dumps(result), mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})
     else:
         raise InvalidAPIUsage('Repository not found', 404)
 
@@ -309,6 +293,6 @@ def repository_delete(id):
         handler.delete_repository(repo)
 
         # return
-        return Response('', status=204, mimetype='application/json')
+        return Response('', status=204, mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})
     else:
         raise InvalidAPIUsage('Repository not found', 404)
