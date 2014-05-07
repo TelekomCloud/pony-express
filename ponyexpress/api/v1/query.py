@@ -1,11 +1,11 @@
 from flask import Blueprint, request, Response, json
 from ponyexpress.api.lib.repositories import Repositories
-
-from ponyexpress.models import Repository, Package, PackageHistory, Node
+from ponyexpress.api.lib.helpers import Pagination
+from ponyexpress.models import Repository, Package, Node
 
 from ponyexpress.api.exceptions import *
+from ponyexpress.version import __version__
 
-from ponyexpress.api.lib.helpers import Pagination
 
 from werkzeug.contrib.cache import SimpleCache
 import hashlib
@@ -14,6 +14,13 @@ cache = SimpleCache()
 
 query = Blueprint('query', __name__)
 
+
+@query.route('/v1/status', methods=['GET'])
+def status():
+
+    state = {'version': __version__, 'name': 'pony-express'}
+
+    return Response(json.dumps(state), mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})
 
 @query.route('/v1/nodes', methods=['GET'])
 def nodes():
