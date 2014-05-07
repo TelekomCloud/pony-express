@@ -1,15 +1,17 @@
 ## Handle configured repositores and query for outdated package data
 from datetime import date
+from functools import cmp_to_key
 import re
 import os
 import yaml
 
 from ponyexpress.database import db
 from ponyexpress.api.lib.providers import *
-from ponyexpress.models.repository import Repository
-from ponyexpress.models.repo_history import RepoHistory
-from ponyexpress.models.package_history import PackageHistory
+
+from ponyexpress.models import Package, RepoHistory, Repository, PackageHistory
+
 import collections
+
 
 class Repositories:
     provider = None
@@ -93,10 +95,11 @@ class Repositories:
         if node_filter != '':
             node_filter_expression = ('%%%s%%' % node_filter)
 
-            packages_history = PackageHistory.query.filter(PackageHistory.nodename.like(node_filter_expression)).\
-                order_by(PackageHistory.pkgname).all()
+            packages_history = PackageHistory.query.filter(PackageHistory.nodename.like(node_filter_expression)). \
+                group_by(PackageHistory.pkgname).order_by(PackageHistory.pkgname).all()
         else:
-            packages_history = PackageHistory.query.order_by(PackageHistory.pkgname).all()
+            packages_history = PackageHistory.query.group_by(PackageHistory.pkgname).order_by(
+                PackageHistory.pkgname).all()
 
         if repo_list is not []:
             rl = []
@@ -107,22 +110,30 @@ class Repositories:
             for package in packages_history:
                 if len(rl) > 0:
                     mp = RepoHistory.query.filter(RepoHistory.pkgname == package.pkgname) \
-                                          .filter(RepoHistory.repo_id.in_(rl)).all()
+                        .filter(RepoHistory.repo_id.in_(rl)).group_by(RepoHistory.pkgname).all()
 
                     if mp is not None:
-                        upstream_version = []
+                        upstream_version = {}
                         for p in mp:
                             # compare versions
                             res = self.ver_cmp(package.pkgversion, p.pkgversion)
 
                             if res < 0:
                                 # repository is newer
-                                upstream_version.append(p.pkgversion)
+                                upstream_version[str(p.repository.id)] = p.pkgversion
 
-                        package.upstream_version = upstream_version
+                        l = len(upstream_version)
+                        if l > 0:
+                            # sort upstream_version by
+                            if l > 1:
+                                upstream_version['latest'] = \
+                                    sorted(upstream_version.values(), key=cmp_to_key(self.ver_cmp), reverse=True)[0]
+                            else:
+                                upstream_version['latest'] = list(upstream_version.values())[0]
 
-                        if package.pkgname not in outdated_packages:
-                            outdated_packages[package.pkgname] = package
+                            if package.pkgname not in outdated_packages:
+                                package.upstream_version = upstream_version
+                                outdated_packages[package.pkgname] = package
                 else:
                     return []
 

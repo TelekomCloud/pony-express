@@ -8,6 +8,7 @@ from ponyexpress.api.exceptions import *
 from ponyexpress.api.lib.helpers import Pagination
 
 from werkzeug.contrib.cache import SimpleCache
+import hashlib
 
 cache = SimpleCache()
 
@@ -112,20 +113,17 @@ def packages():
             nodes_filter = ('%%%s%%' % filter)
 
         if repo_list:
-            outdated_packages_cache = cache.get('outdated_package_cache')
+            key = hashlib.sha224((nodes_filter + ','.join(str(repo_list))).encode('utf-8')).hexdigest()
 
-            if outdated_packages_cache is not None \
-                    and outdated_packages_cache['repolist'] == ','.join(str(repo_list)) \
-                    and outdated_packages_cache['nodefilter'] == nodes_filter:
+            outdated_packages_cache = cache.get(key)
 
-                outdated_packages = outdated_packages_cache['cache']
+            if outdated_packages_cache is not None:
+                outdated_packages = outdated_packages_cache
             else:
                 outdated_packages = handler.get_outdated_packages(nodes_filter, repo_list)
 
-                outdated_package_cache = {'cache': outdated_packages, 'repolist': ','.join(str(repo_list)),
-                                          'nodefilter': nodes_filter}
-
-                cache.set('outdated_package_cache', outdated_package_cache, timeout=60)
+                # Cache for an hour
+                cache.set(key, outdated_packages, timeout=3600)
 
             length = len(outdated_packages)
             paginator = Pagination(page=page, per_page=limit, total_count=length)
