@@ -118,7 +118,7 @@ class BasicTestCaseV1(TestServerBase):
         self.assertIsInstance(j, list)
 
         self.assertIsInstance(j[0]['versions'], list)
-        self.assertEqual(j[0]["upstream"][0], '2.0')
+        self.assertEqual(j[0]["upstream"]['latest'], '2.0')
 
     def testRequestPackagesWithLabel(self):
         self.addNode(self.DATA1)
@@ -139,7 +139,7 @@ class BasicTestCaseV1(TestServerBase):
         self.assertIsInstance(j, list)
 
         self.assertIsInstance(j[0]['versions'], list)
-        self.assertEqual(j[0]["upstream"][0], '2.0')
+        self.assertEqual(j[0]["upstream"]['latest'], '2.0')
 
     def testRequestPackageInfo(self):
         self.addNode(self.DATA2)
