@@ -154,7 +154,6 @@ class TestRepository(TestServerBase):
         self.assertGreaterEqual(len(packages[0].upstream_version), 2)
 
         self.assertEqual(packages[0].pkgversion, '0.6.15-2ubuntu9')
-        #self.assertEqual(packages[0].upstream_version['latest'], ['0.6.21-6ubuntu5.1', '0.6.35-0ubuntu7'])
         self.assertEqual(packages[0].upstream_version['latest'], '0.6.35-0ubuntu7')
 
     def test_version_compare(self):
