@@ -3,6 +3,14 @@ repositories:
     url: http://de.archive.ubuntu.com/ubuntu/dists/precise/main/binary-amd64/Packages.gz
     label: ubuntu
     provider: apt
+  - name: Ubuntu Updates
+    label: ubuntu
+    provider: apt
+    url: http://de.archive.ubuntu.com/ubuntu/dists/precise-updates/main/binary-amd64/Packages.gz
+  - name: Ubuntu Security
+    label: ubuntu
+    provider: apt
+    url: http://de.archive.ubuntu.com/ubuntu/dists/precise-security/main/binary-amd64/Packages.gz
   - name: Cloud
     url: http://ubuntu-cloud.archive.canonical.com/ubuntu/dists/precise-proposed/icehouse/main/binary-amd64/Packages.gz
     label: mirror
