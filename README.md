@@ -2,9 +2,11 @@
 
 [![Build Status](https://travis-ci.org/TelekomCloud/pony-express.png)](https://travis-ci.org/TelekomCloud/pony-express.png)
 
-Manage your package landscape.
+Manage your package landscape. Focuses on getting all packages and versions in your environment and comparing them to upstream repositories. It gives you answer to the questions:
 
-**Under construction...**
+* What applications are installed on what nodes
+* What versions are installed where
+* Am I running having packaged in my environment? (Compared to upstream or internal repo mirror)
 
 # Running
 
