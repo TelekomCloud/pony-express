@@ -247,6 +247,8 @@ def repository_post():
         # add the newly created id to the data to be returned
         data['id'] = id
 
+        cache.clear()
+
         # return the object
         return Response(json.dumps(data), status=201, mimetype='application/json',
                         headers={'Access-Control-Allow-Origin': '*'})
@@ -274,6 +276,8 @@ def repository_update(id):
         handler = Repositories()
         handler.update_repository_info(repo, repodata)
 
+        cache.clear()
+
         # extract the result for the response
         result = {'id': repo.id, 'name': repo.name, 'uri': repo.uri, 'label': repo.label,
                   'provider': repo.provider
@@ -295,6 +299,8 @@ def repository_delete(id):
         # remove the repo
         handler = Repositories()
         handler.delete_repository(repo)
+
+        cache.clear()
 
         # return
         return Response('', status=204, mimetype='application/json', headers={'Access-Control-Allow-Origin': '*'})

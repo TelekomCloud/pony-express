@@ -27,7 +27,7 @@ def dataimport():
         importer.process_node_info(request_json)
 
         cache.clear()
-        
+
         #TODO: return node object?
         return Response(status=200)
     else:
