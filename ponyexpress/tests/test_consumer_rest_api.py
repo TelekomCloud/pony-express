@@ -5,6 +5,7 @@ from nose.tools import *
 from .test_server import *
 
 from ponyexpress.api.lib.providers import MockRepository
+from ponyexpress.version import __version__
 
 class BasicTestCaseV1(TestServerBase):
 
@@ -49,6 +50,12 @@ class BasicTestCaseV1(TestServerBase):
     def testRequestNodesEmpty(self):
         j = self.get_json('/v1/nodes')
         eq_(j, [])
+
+    def testStatusEndpoint(self):
+        j = self.get_json('/v1/status')
+        eq_(type(j), dict)
+        eq_(j['name'], 'pony-express')
+        eq_(j['version'], __version__)
 
     def testRequestNodesOne(self):
         self.addNode(self.DATA1)
