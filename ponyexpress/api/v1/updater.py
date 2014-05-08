@@ -2,6 +2,10 @@ from flask import Blueprint, request, Response, json
 from ponyexpress.api.exceptions import *
 
 from ponyexpress.api.lib.repositories import Repositories
+from werkzeug.contrib.cache import SimpleCache
+
+
+cache = SimpleCache()
 
 updater = Blueprint('updater', __name__)
 
@@ -40,6 +44,9 @@ def repository_update():
         resp = []
 
         if repo_list is not None:
+
+            cache.clear()
+
             for repo in repo_list:
                 handler.select_provider(repo)
                 ret = handler.update_repository(repo)
