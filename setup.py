@@ -19,9 +19,13 @@ import os
 with open(os.path.join(os.path.dirname(__file__), "README.md"), "r") as f:
     long_desc = "".join(f.readlines())
 
+# Instead of importing code during setup, simply parse the version string
+with open(os.path.join(os.path.dirname(__file__), 'ponyexpress/version.py')) as v:
+    version = ''.join(v.readlines()).strip().split('=')[1].strip().strip("\'")
+
 setup(
     name="ponyexpress",
-    version="0.7",
+    version=version,
     packages=find_packages(where='.'),
     package_data={
         'ponyexpress': [
