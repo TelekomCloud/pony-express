@@ -6,7 +6,6 @@ from ponyexpress.models import Repository, Package, Node
 from ponyexpress.api.exceptions import *
 from ponyexpress.version import __version__
 
-
 from werkzeug.contrib.cache import SimpleCache
 import hashlib
 

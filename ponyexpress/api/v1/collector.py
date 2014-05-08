@@ -2,6 +2,9 @@ from flask import Blueprint, request, Response
 from ponyexpress.api.exceptions import *
 
 from ponyexpress.api.lib.package_import import PackageImport
+from werkzeug.contrib.cache import SimpleCache
+
+cache = SimpleCache()
 
 collector = Blueprint('collector', __name__)
 
@@ -23,6 +26,8 @@ def dataimport():
         importer = PackageImport()
         importer.process_node_info(request_json)
 
+        cache.clear()
+        
         #TODO: return node object?
         return Response(status=200)
     else:
