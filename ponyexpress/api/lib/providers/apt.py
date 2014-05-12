@@ -33,6 +33,9 @@ class AptRepository(Provider):
                 # write decompressed data
                 tmpfd.write(d.decompress(chunk))
 
+            # flush out file contents before reading
+            tmpfd.flush()
+
             return self._parse_packages(tmpfd)
         else:
             return None
