@@ -64,6 +64,9 @@ class AptRepository(Provider):
                 if key is not None or value is not None:
                     package_metadata[key] = value
 
+        # remember to close the filehandle
+        filehandle.close()
+
         return metadata
 
     def _parse_metadata(self, package_metadata):
