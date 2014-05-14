@@ -33,6 +33,9 @@ class AptRepository(Provider):
                 # write decompressed data
                 tmpfd.write(d.decompress(chunk))
 
+            # flush out file contents before reading
+            tmpfd.flush()
+
             return self._parse_packages(tmpfd)
         else:
             return None
@@ -60,6 +63,9 @@ class AptRepository(Provider):
                 key, value = self._parse_metadata(line)
                 if key is not None or value is not None:
                     package_metadata[key] = value
+
+        # remember to close the filehandle
+        filehandle.close()
 
         return metadata
 
