@@ -1,3 +1,11 @@
+ponyexpress (0.7.3-1) precise; urgency=medium
+
+  * [ Dominik Richtern ]
+    - Release Ponyexpress version 0.7.3
+    - Flush files when reading repos
+
+ -- Dominik Richter <do.richter@telekom.de>  Fri, 16 May 2014 18:00:35 +0100
+
 ponyexpress (0.7.2-1) precise; urgency=medium
 
   * [ Christoph Kassen ]
