@@ -1,3 +1,9 @@
+## Mothballed
+
+This project is currently unmaintained. The core developers have moved to other projects. The system works very well and has a solid core.
+
+If the status changes, please update this section.
+
 # The Pony Express
 
 [![Build Status](https://travis-ci.org/TelekomCloud/pony-express.png)](https://travis-ci.org/TelekomCloud/pony-express.png)
